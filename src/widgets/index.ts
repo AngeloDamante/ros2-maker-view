@@ -9,6 +9,7 @@ import { publishWidget } from "./PublishWidget.tsx";
 import { buttonsWidget } from "./ButtonsWidget.tsx";
 import { sliderWidget } from "./SliderWidget.tsx";
 import { serviceWidget } from "./ServiceWidget.tsx";
+import { paramWidget } from "./ParamWidget.tsx";
 import { paramsWidget } from "./ParamsWidget.tsx";
 import { textWidget } from "./TextWidget.tsx";
 import { dividerWidget, sectionWidget } from "./SectionWidget.tsx";
@@ -26,6 +27,7 @@ export const WIDGETS: WidgetDef[] = [
   buttonsWidget,
   sliderWidget,
   serviceWidget,
+  paramWidget,
   paramsWidget,
   groupWidget,
   sectionWidget,

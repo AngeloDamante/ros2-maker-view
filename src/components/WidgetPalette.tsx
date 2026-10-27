@@ -58,6 +58,12 @@ const ICONS: Record<string, ReactNode> = {
     </>
   ),
   service: <path d="M2 5.5h10m-2.5-2.5L12 5.5 9.5 8M14 10.5H4m2.5-2.5L4 10.5 6.5 13" strokeLinejoin="round" />,
+  param: (
+    <>
+      <rect x="1.5" y="4.5" width="13" height="7" rx="1.5" />
+      <circle cx="5" cy="8" r="1.6" fill="currentColor" />
+    </>
+  ),
   params: (
     <>
       <path d="M2 4h12M2 8h12M2 12h12" />

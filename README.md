@@ -105,6 +105,7 @@ The bridge's default configuration enables everything the views use: `clientPubl
 | **Buttons** | One or more buttons each publishing a fixed message (commands, mode selector, presets) or setting a node parameter; optional two-click confirmation; once per click or on/off at a rate. |
 | **Slider / setpoint** | Numeric setpoint (topic field or node parameter) with slider, input and presets, optional measured feedback topic; once per change or Stream/Stop at a rate. |
 | **Service call** | Calls a service (e.g. `std_srvs/Trigger`) with a request form and shows the response. |
+| **Parameter** | One node parameter: its current value in large type and the control for its type (checkbox for booleans, input + Set for numbers, text and arrays); optionally read-only. |
 | **Parameters** | Reads and sets a node's parameters. |
 | **Group** | Box with a title containing other widgets: they move with it, its height follows the content, optionally collapsible. |
 | **Section** | Title followed by a line, to separate the blocks of a page (color, line style, size; `${var}` allowed). |
@@ -165,6 +166,10 @@ list is empty — with their current values, in the format of `ros2 param dump`
 (`<node>_params_<date>-<time>.yaml`). Use it with `ros2 run <pkg> <exe> --ros-args --params-file <file>`
 (a partial file sets only those parameters) or copy it into your configuration.
 The views never write launch or configuration files.
+
+The **Parameter** widget shows a single parameter (node + name) and sets it: the value follows the
+node, the input turns orange while edited and is applied with Enter or **Set**, a boolean is set
+as soon as its checkbox changes.
 
 **Buttons** and **Slider** can set a parameter instead of publishing: set **Target** to *Set a node
 parameter* and give the node and the parameter name. Each button has a **Value** (`true`, `2.5`,

@@ -171,9 +171,9 @@ button.armed { background: var(--bad-soft) !important; }
 
 /* Value */
 .w-value { display: flex; flex-direction: column; justify-content: space-between; }
-.w-value .big { flex: 1; display: flex; align-items: center; gap: 6px; min-height: 0; overflow: hidden; }
-.w-value .num { font: 600 clamp(16px, min(42cqh, 16cqw), 72px) / 1.05 var(--mono); letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.w-value .unit, .w-bar .unit, .w-slider .unit { color: var(--muted); font-size: clamp(12px, 14cqh, 18px); align-self: flex-end; padding-bottom: 6%; margin-left: 2px; }
+.w-value .big, .w-param .big { flex: 1; display: flex; align-items: center; gap: 6px; min-height: 0; overflow: hidden; }
+.w-value .num, .w-param .num { font: 600 clamp(16px, min(42cqh, 16cqw), 72px) / 1.05 var(--mono); letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.w-value .unit, .w-bar .unit, .w-slider .unit, .w-param .unit { color: var(--muted); font-size: clamp(12px, 14cqh, 18px); align-self: flex-end; padding-bottom: 6%; margin-left: 2px; }
 .stale .num, .stale .lbl { color: var(--muted); }
 
 /* Bar */
@@ -235,7 +235,7 @@ button.armed { background: var(--bad-soft) !important; }
 .msg-field { display: grid; grid-template-columns: minmax(80px, 38%) 1fr; gap: 8px; align-items: center; }
 .msg-field .name { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .msg-field input[type="checkbox"] { justify-self: start; }
-.w-publish, .w-service, .w-buttons, .w-slider, .w-params { display: flex; flex-direction: column; }
+.w-publish, .w-service, .w-buttons, .w-slider, .w-params, .w-param { display: flex; flex-direction: column; }
 
 /* Buttons */
 .w-buttons .btns { flex: 1; display: flex; gap: 8px; min-height: 0; }
@@ -270,6 +270,9 @@ table.params .pname { font-size: 12px; max-width: 0; width: 38%; overflow: hidde
 table.params .ptype { font-size: 10px; color: var(--muted); margin-left: 6px; }
 table.params .pval input[type="text"], table.params .pval input[type="number"] { width: 100%; }
 table.params input.edited { border-color: var(--c-warn); }
+.w-param .param-input { flex: 1; min-width: 60px; }
+.w-param .param-input.edited { border-color: var(--c-warn); }
+.w-param .param-toggle { display: flex; align-items: center; gap: 6px; font: 12px var(--mono); }
 table.params .pact { width: 1%; }
 table.params .pres { width: 22%; max-width: 0; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 table.params .pres.ok { color: var(--c-ok); }

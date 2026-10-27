@@ -66,7 +66,7 @@ export function ConfigForm({
   return (
     <div className="cfg-form">
       {fields
-        .filter((f) => !f.showIf || f.showIf(value))
+        .filter((f) => !f.showIf || f.showIf(value, ctx.root))
         .map((f) => (
           <FieldRow key={f.key} spec={f} item={value} ctx={ctx} value={value[f.key]} onChange={(v) => onChange({ ...value, [f.key]: v })} />
         ))}

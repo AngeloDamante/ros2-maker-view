@@ -3,7 +3,7 @@
 // grids with the same behaviour. Dropping a dragged widget over another grid
 // moves it there: into a group, or out of it onto the page.
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import ReactGridLayout, { useContainerWidth, type Layout, type LayoutItem } from "react-grid-layout";
 import type { VarValues } from "../lib/vars.ts";
 import { GROUP_TYPE, groupHeight, isGroup } from "../lib/tree.ts";
@@ -78,6 +78,25 @@ export function WidgetGrid({ container, widgets, cols }: { container: string | n
   // Phones: a single column in reading order instead of a squeezed grid.
   const stacked = container === null ? mounted && width < 700 && !editing : parentStacked;
 
+  // Scrolling during a drag (the grid's auto-scroll near the edges, or the wheel) moves the grid
+  // under a still pointer, and the dragged widget would slide away from it until the next mouse
+  // move: replay the last pointer position so it stays under the pointer.
+  useEffect(() => {
+    if (container !== null || !editing) return;
+    let last = { x: 0, y: 0 };
+    const onMove = (e: MouseEvent) => (last = { x: e.clientX, y: e.clientY });
+    const onScroll = () => {
+      if (!document.querySelector(".react-draggable-dragging")) return;
+      document.dispatchEvent(new MouseEvent("mousemove", { clientX: last.x, clientY: last.y, buttons: 1, bubbles: true }));
+    };
+    document.addEventListener("mousemove", onMove, true);
+    document.addEventListener("scroll", onScroll, true);
+    return () => {
+      document.removeEventListener("mousemove", onMove, true);
+      document.removeEventListener("scroll", onScroll, true);
+    };
+  }, [container, editing]);
+
   const layout = useMemo(
     () =>
       widgets.map((w) => {
@@ -105,10 +124,24 @@ export function WidgetGrid({ container, widgets, cols }: { container: string | n
       onDelete={() => editor.remove(w.id)}
     />
   );
+  // Memoized so that the re-renders during a drag (below) don't re-render the widgets.
+  const items = useMemo(() => widgets.map((w) => <div key={w.id}>{frame(w)}</div>), [widgets, editing, editor]);
+  // react-grid-layout 2.3 memoizes its items and redraws the dragged one only when it enters a
+  // new cell, so it moves in jumps. Re-rendering on every move hands the items a new onDrag
+  // (one of the props they compare) and the dragged widget follows the pointer smoothly.
+  const [, setDragTick] = useState(0);
 
   return (
     <StackedContext.Provider value={stacked}>
-      <div ref={containerRef} className="grid-wrap" data-grid-container={container ?? "page"} data-cols={cols}>
+      <div
+        ref={containerRef}
+        className="grid-wrap"
+        data-grid-container={container ?? "page"}
+        data-cols={cols}
+        // Grabbing a widget over selected text starts a native browser drag, which swallows the
+        // mouseup: the widget would keep following the pointer after the button is released.
+        onDragStart={editing ? (e) => e.preventDefault() : undefined}
+      >
         {stacked ? (
           <div className="stack">
             {[...widgets]
@@ -145,6 +178,7 @@ export function WidgetGrid({ container, widgets, cols }: { container: string | n
                 const type = takeDraggedType();
                 if (type && item) editor.dropNew(container, type, item, l.filter((x) => x.i !== item.i));
               }}
+              onDrag={() => setDragTick((t) => t + 1)}
               onDragStop={(_l, _old, item, _ph, e, node) => {
                 if (!item || !node || !("clientX" in e)) return;
                 const ev = e as MouseEvent;
@@ -158,9 +192,7 @@ export function WidgetGrid({ container, widgets, cols }: { container: string | n
                 if (editing) editor.layoutChanged(container, l);
               }}
             >
-              {widgets.map((w) => (
-                <div key={w.id}>{frame(w)}</div>
-              ))}
+              {items}
             </ReactGridLayout>
           )
         )}

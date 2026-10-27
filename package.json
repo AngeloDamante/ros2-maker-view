@@ -22,7 +22,7 @@
     "@foxglove/rosmsg2-serialization": "3.1.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-grid-layout": "2.2.4"
+    "react-grid-layout": "2.3.0"
   },
   "devDependencies": {
     "@types/node": "24.10.1",

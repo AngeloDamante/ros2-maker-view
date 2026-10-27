@@ -4,8 +4,907 @@
   "pages": [
     {
       "id": "pjqsx1sb",
-      "title": "Main",
-      "widgets": []
+      "title": "Motors",
+      "widgets": [
+        {
+          "id": "wxbt6pbv",
+          "type": "group",
+          "title": "AK60Yaw",
+          "x": 0,
+          "y": 0,
+          "w": 18,
+          "h": 8,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wirwterl",
+                "type": "value",
+                "title": "Degree",
+                "x": 6,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              },
+              {
+                "id": "wx8wykp4",
+                "type": "indicator",
+                "title": "State",
+                "x": 10,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "states": [
+                    {
+                      "value": "0",
+                      "label": "Not Calibrated",
+                      "color": "muted"
+                    },
+                    {
+                      "value": "1",
+                      "label": "GoingToFirstSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "2",
+                      "label": "GoingToSecondSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "3",
+                      "label": "CollectionData",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "4",
+                      "label": "GoingToZero",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "5",
+                      "label": "Calibrated",
+                      "color": "ok"
+                    }
+                  ],
+                  "otherColor": "warn",
+                  "showRaw": true,
+                  "layout": "single"
+                }
+              },
+              {
+                "id": "wv6gcqi0",
+                "type": "value",
+                "title": "Range",
+                "x": 14,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              },
+              {
+                "id": "wbp8x0lq",
+                "type": "bar",
+                "title": "current",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "min": 0,
+                  "max": 1,
+                  "baseColor": "ok",
+                  "thresholds": [
+                    {
+                      "value": 0.8,
+                      "color": "warn",
+                      "label": ""
+                    }
+                  ],
+                  "orientation": "horizontal",
+                  "abs": true
+                }
+              },
+              {
+                "id": "wn1i2eqy",
+                "type": "buttons",
+                "x": 0,
+                "y": 4,
+                "w": 6,
+                "h": 3,
+                "config": {
+                  "topic": "",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "row",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "Active Calibration",
+                      "message": {
+                        "data": 1
+                      },
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wie9g454",
+          "type": "group",
+          "title": "AK60Pitch",
+          "x": 0,
+          "y": 9,
+          "w": 18,
+          "h": 8,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wdvf2tng",
+                "type": "value",
+                "title": "Degree",
+                "x": 6,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              },
+              {
+                "id": "w9u1ozyl",
+                "type": "indicator",
+                "title": "State",
+                "x": 10,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "states": [
+                    {
+                      "value": "0",
+                      "label": "Not Calibrated",
+                      "color": "muted"
+                    },
+                    {
+                      "value": "1",
+                      "label": "GoingToFirstSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "2",
+                      "label": "GoingToSecondSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "3",
+                      "label": "CollectionData",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "4",
+                      "label": "GoingToZero",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "5",
+                      "label": "Calibrated",
+                      "color": "ok"
+                    }
+                  ],
+                  "otherColor": "warn",
+                  "showRaw": true,
+                  "layout": "single"
+                }
+              },
+              {
+                "id": "w7u02aeg",
+                "type": "value",
+                "title": "Range",
+                "x": 14,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              },
+              {
+                "id": "whqaapuv",
+                "type": "bar",
+                "title": "current",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "min": 0,
+                  "max": 1,
+                  "baseColor": "ok",
+                  "thresholds": [
+                    {
+                      "value": 0.8,
+                      "color": "warn",
+                      "label": ""
+                    }
+                  ],
+                  "orientation": "horizontal",
+                  "abs": true
+                }
+              },
+              {
+                "id": "ws9sx48f",
+                "type": "buttons",
+                "x": 0,
+                "y": 4,
+                "w": 6,
+                "h": 3,
+                "config": {
+                  "topic": "",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "row",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "Active Calibration",
+                      "message": {
+                        "data": 1
+                      },
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "w5p23m7l",
+          "type": "group",
+          "title": "AK70Pendulum",
+          "x": 0,
+          "y": 18,
+          "w": 18,
+          "h": 8,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "w8dc77gq",
+                "type": "value",
+                "title": "Degree",
+                "x": 6,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              },
+              {
+                "id": "wldq8gsd",
+                "type": "indicator",
+                "title": "State",
+                "x": 10,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "states": [
+                    {
+                      "value": "0",
+                      "label": "Not Calibrated",
+                      "color": "muted"
+                    },
+                    {
+                      "value": "1",
+                      "label": "GoingToFirstSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "2",
+                      "label": "GoingToSecondSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "3",
+                      "label": "CollectionData",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "4",
+                      "label": "GoingToZero",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "5",
+                      "label": "Calibrated",
+                      "color": "ok"
+                    }
+                  ],
+                  "otherColor": "warn",
+                  "showRaw": true,
+                  "layout": "single"
+                }
+              },
+              {
+                "id": "w51moi9s",
+                "type": "value",
+                "title": "Range",
+                "x": 14,
+                "y": 0,
+                "w": 4,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              },
+              {
+                "id": "w75okchb",
+                "type": "bar",
+                "title": "current",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "min": 0,
+                  "max": 1,
+                  "baseColor": "ok",
+                  "thresholds": [
+                    {
+                      "value": 0.8,
+                      "color": "warn",
+                      "label": ""
+                    }
+                  ],
+                  "orientation": "horizontal",
+                  "abs": true
+                }
+              },
+              {
+                "id": "w03o6zlv",
+                "type": "buttons",
+                "x": 0,
+                "y": 4,
+                "w": 6,
+                "h": 3,
+                "config": {
+                  "topic": "",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "row",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "Active Calibration",
+                      "message": {
+                        "data": 1
+                      },
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wdwdnyeb",
+          "type": "divider",
+          "x": 0,
+          "y": 17,
+          "w": 18,
+          "h": 1,
+          "config": {
+            "orientation": "horizontal",
+            "line": "solid",
+            "thickness": 1,
+            "color": ""
+          }
+        },
+        {
+          "id": "w9xyh0yw",
+          "type": "divider",
+          "x": 0,
+          "y": 8,
+          "w": 18,
+          "h": 1,
+          "config": {
+            "orientation": "horizontal",
+            "line": "solid",
+            "thickness": 1,
+            "color": ""
+          }
+        },
+        {
+          "id": "wihik4n3",
+          "type": "divider",
+          "x": 0,
+          "y": 26,
+          "w": 18,
+          "h": 1,
+          "config": {
+            "orientation": "horizontal",
+            "line": "solid",
+            "thickness": 1,
+            "color": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "puqpt6xd",
+      "title": "Payloads",
+      "widgets": [
+        {
+          "id": "wtymrvlx",
+          "type": "group",
+          "title": "AWASH",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 5,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wt0fdf80",
+                "type": "bar",
+                "title": "Raw",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "min": 0,
+                  "max": 3300,
+                  "baseColor": "ok",
+                  "thresholds": [
+                    {
+                      "value": 1360,
+                      "color": "warn",
+                      "label": ""
+                    },
+                    {
+                      "value": 3137,
+                      "color": "bad",
+                      "label": ""
+                    }
+                  ],
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "id": "w91r8fp1",
+                "type": "indicator",
+                "title": "state",
+                "x": 6,
+                "y": 0,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "",
+                  "path": "data",
+                  "states": [
+                    {
+                      "value": "1",
+                      "label": "DISCONNECTED",
+                      "color": "muted"
+                    },
+                    {
+                      "value": "0",
+                      "label": "CONNECTED",
+                      "color": "ok"
+                    },
+                    {
+                      "value": "2",
+                      "label": "ALARM",
+                      "color": "bad"
+                    }
+                  ],
+                  "otherColor": "warn",
+                  "showRaw": false,
+                  "layout": "single"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wv9mid01",
+          "type": "group",
+          "title": "Beacon",
+          "x": 0,
+          "y": 5,
+          "w": 12,
+          "h": 6,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "w1q9wmgr",
+                "type": "buttons",
+                "title": "Active",
+                "x": 8,
+                "y": 0,
+                "w": 4,
+                "h": 5,
+                "config": {
+                  "target": "param",
+                  "topic": "",
+                  "node": "",
+                  "param": "",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "grid",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "Off",
+                      "message": {
+                        "data": 0
+                      },
+                      "color": "",
+                      "confirm": false
+                    },
+                    {
+                      "label": "On",
+                      "message": {
+                        "data": 1
+                      },
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "wtxk1gmr",
+                "type": "slider",
+                "title": "percentage",
+                "x": 0,
+                "y": 0,
+                "w": 8,
+                "h": 5,
+                "config": {
+                  "target": "param",
+                  "topic": "",
+                  "node": "",
+                  "param": "",
+                  "type": "",
+                  "path": "data",
+                  "template": {},
+                  "min": 0,
+                  "max": 100,
+                  "step": 1,
+                  "mode": "release",
+                  "presets": [],
+                  "unit": "",
+                  "autoStamp": true,
+                  "feedbackTopic": "",
+                  "feedbackPath": "data",
+                  "repeatHz": null
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wcr1jyp7",
+          "type": "group",
+          "title": "Led",
+          "x": 0,
+          "y": 11,
+          "w": 12,
+          "h": 8,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wu8l6u0k",
+                "type": "message",
+                "title": "RGB",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "path": "",
+                  "maxArray": 20
+                }
+              },
+              {
+                "id": "w564hdng",
+                "type": "slider",
+                "title": "Edge Period MS",
+                "x": 6,
+                "y": 0,
+                "w": 6,
+                "h": 7,
+                "config": {
+                  "target": "param",
+                  "topic": "",
+                  "node": "",
+                  "param": "",
+                  "type": "",
+                  "path": "data",
+                  "template": {},
+                  "min": 1000,
+                  "max": 10000,
+                  "step": 500,
+                  "mode": "release",
+                  "presets": [],
+                  "unit": "",
+                  "autoStamp": true,
+                  "feedbackTopic": "",
+                  "feedbackPath": "data",
+                  "repeatHz": null
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wowulgg6",
+          "type": "group",
+          "title": "T500",
+          "x": 0,
+          "y": 19,
+          "w": 12,
+          "h": 8,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wdkjyfqd",
+                "type": "publish",
+                "title": "PWM Request",
+                "x": 0,
+                "y": 0,
+                "w": 12,
+                "h": 7,
+                "config": {
+                  "topic": "",
+                  "type": "",
+                  "template": {},
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "p7oultf6",
+      "title": "Motors CMD",
+      "widgets": [
+        {
+          "id": "wbkjevat",
+          "type": "group",
+          "title": "AK60YAW",
+          "x": 0,
+          "y": 0,
+          "w": 15,
+          "h": 13,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wsmtxcyq",
+                "type": "publish",
+                "title": "Setpoint",
+                "x": 0,
+                "y": 0,
+                "w": 7,
+                "h": 8,
+                "config": {
+                  "topic": "/effector/vector_thruster/alpha/setpoint",
+                  "type": "",
+                  "template": {},
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
+                }
+              },
+              {
+                "id": "we3l4w4u",
+                "type": "params",
+                "title": "Params",
+                "x": 7,
+                "y": 0,
+                "w": 8,
+                "h": 12,
+                "config": {
+                  "node": "/ak60Yaw0",
+                  "params": [],
+                  "editable": true,
+                  "showType": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "who6s0xx",
+          "type": "group",
+          "title": "AK60Pitch",
+          "x": 0,
+          "y": 13,
+          "w": 15,
+          "h": 9,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wey2r3w4",
+                "type": "publish",
+                "title": "Setpoint",
+                "x": 0,
+                "y": 0,
+                "w": 7,
+                "h": 8,
+                "config": {
+                  "topic": "",
+                  "type": "",
+                  "template": {},
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
+                }
+              },
+              {
+                "id": "wdgl7yfi",
+                "type": "params",
+                "title": "Params",
+                "x": 7,
+                "y": 0,
+                "w": 8,
+                "h": 8,
+                "config": {
+                  "node": "",
+                  "params": [],
+                  "editable": true,
+                  "showType": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "w15o5vth",
+          "type": "group",
+          "title": "AK70Pendulum",
+          "x": 0,
+          "y": 22,
+          "w": 15,
+          "h": 9,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wi625crr",
+                "type": "publish",
+                "title": "Setpoint",
+                "x": 0,
+                "y": 0,
+                "w": 7,
+                "h": 8,
+                "config": {
+                  "topic": "",
+                  "type": "",
+                  "template": {},
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
+                }
+              },
+              {
+                "id": "wm22g53t",
+                "type": "params",
+                "title": "Params",
+                "x": 7,
+                "y": 0,
+                "w": 8,
+                "h": 8,
+                "config": {
+                  "node": "",
+                  "params": [],
+                  "editable": true,
+                  "showType": true
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }

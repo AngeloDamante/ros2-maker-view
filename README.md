@@ -102,8 +102,8 @@ The bridge's default configuration enables everything the views use: `clientPubl
 | **Raw message** | Latest message (or a sub-field) as JSON, like `ros2 topic echo`. |
 | **Event log** | App events (connection, publishes, parameter results) and/or `/rosout`, filterable by node and level. |
 | **Publisher form** | Form generated from the message type; publish once, or Start/Stop at a rate. |
-| **Buttons** | One or more buttons each publishing a fixed message (commands, mode selector, presets); optional two-click confirmation; once per click or on/off at a rate. |
-| **Slider / setpoint** | Numeric setpoint with slider, input and presets, optional measured feedback topic; once per change or Stream/Stop at a rate. |
+| **Buttons** | One or more buttons each publishing a fixed message (commands, mode selector, presets) or setting a node parameter; optional two-click confirmation; once per click or on/off at a rate. |
+| **Slider / setpoint** | Numeric setpoint (topic field or node parameter) with slider, input and presets, optional measured feedback topic; once per change or Stream/Stop at a rate. |
 | **Service call** | Calls a service (e.g. `std_srvs/Trigger`) with a request form and shows the response. |
 | **Parameters** | Reads and sets a node's parameters. |
 | **Group** | Box with a title containing other widgets: they move with it, its height follows the content, optionally collapsible. |
@@ -158,6 +158,22 @@ The widget lists all parameters of a node (or the ones you list) and sets them w
 type (doubles stay doubles even when written as `2`). foxglove_bridge does not report *why* a set
 fails: when the node keeps the old value the widget shows **rejected** (read-only parameter, wrong
 type, or refused by the node's callback); the reason is in the bridge log.
+
+Changes made from a view live only in the running node. **Save YAML** downloads the parameters
+shown by the widget — the ones listed in its configuration, or all the node's parameters when the
+list is empty — with their current values, in the format of `ros2 param dump`
+(`<node>_params_<date>-<time>.yaml`). Use it with `ros2 run <pkg> <exe> --ros-args --params-file <file>`
+(a partial file sets only those parameters) or copy it into your configuration.
+The views never write launch or configuration files.
+
+**Buttons** and **Slider** can set a parameter instead of publishing: set **Target** to *Set a node
+parameter* and give the node and the parameter name. Each button has a **Value** (`true`, `2.5`,
+`fast`, `[1, 2]`), converted to the parameter's type; the button matching the node's current value
+is highlighted, also when the parameter is changed elsewhere. The slider starts from the node's
+value, follows it, and sets it on release, Enter, **Set** or a preset (integer parameters are
+rounded); a rejected value puts it back. Rate, auto stamp and feedback topic do not apply. This
+only changes the node's behaviour if the node handles parameter changes while running (a
+parameter callback); for commands use a topic or a service.
 
 ## Standalone export
 

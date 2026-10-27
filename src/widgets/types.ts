@@ -38,7 +38,8 @@ export interface FieldSpec {
   fields?: FieldSpec[];
   newItem?: () => Record<string, any>;
   itemLabel?: (item: any, index: number) => string;
-  showIf?: (config: Record<string, any>) => boolean;
+  /** `root` is the whole widget config (differs from `config` for the fields of list items). */
+  showIf?: (config: Record<string, any>, root: Record<string, any>) => boolean;
   /** For "stringList": conversion between the stored value and the edited lines. */
   parseLines?: (lines: string[]) => unknown;
   formatLines?: (value: any) => string[];

@@ -3,13 +3,18 @@ import { useBridge, useBridgeVersion, useTopic } from "../bridge/react.tsx";
 import { defaultMessage, fieldAt, isIntegerType, stampMessage } from "../bridge/schema.ts";
 import { fmtNumber, fmtTime } from "../lib/format.ts";
 import { getPath, setPath, toNumber } from "../lib/path.ts";
+import { kindOf } from "../lib/paramValue.ts";
 import { AUTOSTAMP_FIELD, PUBLISH_TARGET_FIELDS } from "./common.tsx";
+import { isParamTarget, PARAM_TARGET_FIELDS, TARGET_FIELD, topicOnly, useParam } from "./param.ts";
 import { isEmptyObject, StatusLine, usePreparedPublisher, type SendStatus } from "./PublishWidget.tsx";
 import { rateField, rateOf, useRepeater } from "./repeat.ts";
 import type { WidgetDef, WidgetProps } from "./types.ts";
 
 interface Config {
+  target?: "topic" | "param";
   topic: string;
+  node?: string;
+  param?: string;
   type?: string;
   path?: string;
   template?: Record<string, unknown>;
@@ -30,21 +35,40 @@ interface Config {
 function SliderWidget({ config }: WidgetProps<Config>) {
   const client = useBridge();
   useBridgeVersion();
-  usePreparedPublisher(config.topic, config.type);
+  const toParam = isParamTarget(config);
+  usePreparedPublisher(toParam ? "" : config.topic, config.type);
+  const param = useParam(toParam ? config.node : "", config.param);
   const min = config.min ?? -100, max = config.max ?? 100, step = config.step || 1;
   const [value, setValue] = useState<number>(config.initial ?? Math.min(max, Math.max(min, 0)));
   const [text, setText] = useState(String(value));
   const [status, setStatus] = useState<SendStatus | null>(null);
   const lastSent = useRef(0);
-  const feedback = useTopic(config.feedbackTopic || undefined);
+  const feedback = useTopic((!toParam && config.feedbackTopic) || undefined);
   const fb = config.feedbackTopic && feedback.msg !== undefined && !feedback.stale ? toNumber(getPath(feedback.msg, config.feedbackPath || "data")) : undefined;
   useEffect(() => setText(String(value)), [value]);
+  // Parameter target: the slider follows the value on the node (also when changed elsewhere).
+  const nodeValue = toParam && typeof param.param?.value === "number" ? param.param.value : undefined;
+  const nodeValueRef = useRef(nodeValue);
+  nodeValueRef.current = nodeValue;
+  useEffect(() => {
+    if (nodeValue !== undefined) setValue(nodeValue);
+  }, [nodeValue]);
 
   /** "action": status + log; "drag": status only; "stream": nothing unless it fails. */
   const send = (v: number, kind: "action" | "drag" | "stream" = "action"): boolean => {
     if (!Number.isFinite(v)) {
       setStatus({ ok: false, text: "Invalid value" });
       return false;
+    }
+    if (toParam) {
+      const x = param.param && kindOf(param.param) === "integer" ? Math.round(v) : v;
+      setStatus({ ok: true, text: `${param.short} = ${x} …` });
+      param.set(x).then((r) => {
+        setStatus({ ok: r.ok, text: r.ok ? `${param.full} = ${x} · ${fmtTime(Date.now())}` : r.text });
+        // rejected: back to the value the node kept
+        if (!r.ok && nodeValueRef.current !== undefined) setValue(nodeValueRef.current);
+      });
+      return true;
     }
     const type = client.publishType(config.topic, config.type || undefined);
     const defs = client.definitionsFor(type);
@@ -67,7 +91,7 @@ function SliderWidget({ config }: WidgetProps<Config>) {
 
   // With a rate, Stream/Stop publishes the current value continuously; moving the
   // slider while streaming changes the value being sent.
-  const hz = rateOf(config.repeatHz);
+  const hz = toParam ? 0 : rateOf(config.repeatHz);
   const valueRef = useRef(value);
   valueRef.current = value;
   const repeat = useRepeater(hz, () => send(valueRef.current, "stream"));
@@ -79,8 +103,8 @@ function SliderWidget({ config }: WidgetProps<Config>) {
 
   const onSlide = (v: number) => {
     setValue(v);
-    // continuous mode without a rate: throttle to 20 Hz while dragging
-    if (hz <= 0 && config.mode === "continuous" && performance.now() - lastSent.current > 50) send(v, "drag");
+    // continuous mode without a rate: throttle to 20 Hz while dragging (parameters: on release only)
+    if (!toParam && hz <= 0 && config.mode === "continuous" && performance.now() - lastSent.current > 50) send(v, "drag");
   };
   const commit = (v: number) => {
     setValue(v);
@@ -88,6 +112,7 @@ function SliderWidget({ config }: WidgetProps<Config>) {
     if (!repeat.running) send(v);
   };
   const presets = (config.presets || []).map((p) => Number(p)).filter((p) => Number.isFinite(p));
+  const ready = toParam ? !!param.full : !!config.topic;
 
   return (
     <div className="w-slider">
@@ -96,7 +121,12 @@ function SliderWidget({ config }: WidgetProps<Config>) {
           {fmtNumber(value, config.decimals ?? undefined)}
           {config.unit ? <span className="unit">{config.unit}</span> : null}
         </span>
-        {config.feedbackTopic ? (
+        {toParam ? (
+          <span className={"feedback" + (nodeValue === undefined ? " stale" : "")} title={param.full}>
+            node {nodeValue === undefined ? "—" : fmtNumber(nodeValue, config.decimals ?? undefined)}
+            {config.unit ? ` ${config.unit}` : ""}
+          </span>
+        ) : config.feedbackTopic ? (
           <span className={"feedback" + (fb === undefined ? " stale" : "")}>
             measured {fmtNumber(fb, config.decimals ?? undefined)}
             {config.unit ? ` ${config.unit}` : ""}
@@ -130,16 +160,16 @@ function SliderWidget({ config }: WidgetProps<Config>) {
             if (e.key === "Enter") commit(Number(text));
           }}
         />
-        <button className="primary" onClick={() => commit(Number(text))} disabled={!config.topic}>
-          Send
+        <button className="primary" onClick={() => commit(Number(text))} disabled={!ready}>
+          {toParam ? "Set" : "Send"}
         </button>
         {hz > 0 && (
-          <button className={repeat.running ? "on streaming" : ""} onClick={toggleStream} disabled={!config.topic}>
+          <button className={repeat.running ? "on streaming" : ""} onClick={toggleStream} disabled={!ready}>
             {repeat.running ? `■ Stop ${hz} Hz` : `▶ Stream ${hz} Hz`}
           </button>
         )}
         {presets.map((p, i) => (
-          <button key={i} className="small" onClick={() => commit(p)} disabled={!config.topic}>
+          <button key={i} className="small" onClick={() => commit(p)} disabled={!ready}>
             {p > 0 && min < 0 ? `+${p}` : p}
           </button>
         ))}
@@ -148,7 +178,7 @@ function SliderWidget({ config }: WidgetProps<Config>) {
         status={
           repeat.running && (!status || status.ok)
             ? { ok: true, text: `● ${config.path || "data"} = ${value} at ${hz} Hz on ${client.publishTopic(config.topic)} · ${repeat.sent} sent` }
-            : status
+            : status ?? (toParam && param.error ? { ok: false, text: param.error } : null)
         }
       />
     </div>
@@ -158,36 +188,44 @@ function SliderWidget({ config }: WidgetProps<Config>) {
 export const sliderWidget: WidgetDef = {
   type: "slider",
   label: "Slider / setpoint",
-  description: "Numeric setpoint with slider, input box and presets; optional measured feedback.",
+  description: "Numeric setpoint (topic or parameter) with slider, input box and presets; optional measured feedback.",
   category: "Write",
   size: { w: 6, h: 5 },
   minSize: { w: 3, h: 4 },
-  defaults: () => ({ topic: "", type: "", path: "data", template: {}, min: -100, max: 100, step: 1, mode: "release", presets: [], unit: "", autoStamp: true, feedbackTopic: "", feedbackPath: "data", repeatHz: null }),
+  defaults: () => ({ target: "topic", topic: "", node: "", param: "", type: "", path: "data", template: {}, min: -100, max: 100, step: 1, mode: "release", presets: [], unit: "", autoStamp: true, feedbackTopic: "", feedbackPath: "data", repeatHz: null }),
   fields: [
-    ...PUBLISH_TARGET_FIELDS,
-    { key: "path", label: "Field", kind: "path", topicKey: "topic", numeric: true, placeholder: "data" },
-    { key: "template", label: "Other fields", kind: "message", topicKey: "topic", typeKey: "type", help: "Template for the rest of the message (JSON)." },
+    TARGET_FIELD,
+    ...topicOnly([
+      ...PUBLISH_TARGET_FIELDS,
+      { key: "path", label: "Field", kind: "path", topicKey: "topic", numeric: true, placeholder: "data" },
+      { key: "template", label: "Other fields", kind: "message", topicKey: "topic", typeKey: "type", help: "Template for the rest of the message (JSON)." },
+    ]),
+    ...PARAM_TARGET_FIELDS,
     { key: "min", label: "Min", kind: "number", placeholder: "-100" },
     { key: "max", label: "Max", kind: "number", placeholder: "100" },
     { key: "step", label: "Step", kind: "number", placeholder: "1" },
-    { key: "initial", label: "Initial value", kind: "number", placeholder: "0" },
-    rateField("Empty: the value is published once (on release, Enter, Send or a preset). With a rate, a Stream/Stop switch publishes the current value continuously."),
-    {
-      key: "mode",
-      label: "Send",
-      kind: "select",
-      showIf: (c) => !rateOf(c.repeatHz),
-      options: [
-        { value: "release", label: "On release / Enter" },
-        { value: "continuous", label: "Continuously while dragging (20 Hz)" },
-      ],
-    },
+    { key: "initial", label: "Initial value", kind: "number", placeholder: "0", help: "With a parameter the slider starts from the node's value once connected." },
+    ...topicOnly([
+      rateField("Empty: the value is published once (on release, Enter, Send or a preset). With a rate, a Stream/Stop switch publishes the current value continuously."),
+      {
+        key: "mode",
+        label: "Send",
+        kind: "select",
+        showIf: (c) => !rateOf(c.repeatHz),
+        options: [
+          { value: "release", label: "On release / Enter" },
+          { value: "continuous", label: "Continuously while dragging (20 Hz)" },
+        ],
+      },
+    ]),
     { key: "presets", label: "Presets", kind: "stringList", placeholder: "one value per line, e.g. -30" },
     { key: "unit", label: "Unit", kind: "text" },
     { key: "decimals", label: "Decimals", kind: "number", placeholder: "auto" },
-    { key: "feedbackTopic", label: "Feedback topic", kind: "topic", help: "Optional measured value shown next to the setpoint." },
-    { key: "feedbackPath", label: "Feedback field", kind: "path", topicKey: "feedbackTopic", numeric: true, placeholder: "data" },
-    AUTOSTAMP_FIELD,
+    ...topicOnly([
+      { key: "feedbackTopic", label: "Feedback topic", kind: "topic", help: "Optional measured value shown next to the setpoint." },
+      { key: "feedbackPath", label: "Feedback field", kind: "path", topicKey: "feedbackTopic", numeric: true, placeholder: "data" },
+      AUTOSTAMP_FIELD,
+    ]),
   ],
   component: SliderWidget,
 };

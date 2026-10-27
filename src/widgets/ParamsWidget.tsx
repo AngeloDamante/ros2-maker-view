@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useBridge, useBridgeVersion } from "../bridge/react.tsx";
 import type { Param } from "../bridge/client.ts";
+import { safeFileName } from "../lib/embed.ts";
+import { downloadText } from "../lib/exportHtml.ts";
+import { paramsToYaml } from "../lib/paramsYaml.ts";
+import { kindOf } from "../lib/paramValue.ts";
+import { setParamValue, type SetResult } from "./param.ts";
 import type { WidgetDef, WidgetProps } from "./types.ts";
 
 interface Config {
@@ -8,23 +13,6 @@ interface Config {
   params?: string[];
   editable?: boolean;
   showType?: boolean;
-}
-
-type Kind = "bool" | "integer" | "double" | "string" | "array";
-
-interface Result {
-  ok: boolean;
-  text: string;
-}
-
-// foxglove_bridge only tags doubles ("float64") and some arrays; integers,
-// booleans and strings have no type field and are recognized from the value.
-function kindOf(p: Param): Kind {
-  if (p.type === "float64") return "double";
-  if (p.type?.endsWith("_array") || Array.isArray(p.value)) return "array";
-  if (typeof p.value === "boolean") return "bool";
-  if (typeof p.value === "number") return "integer";
-  return "string";
 }
 
 function typeLabel(p: Param): string {
@@ -76,7 +64,7 @@ function ParamsWidget({ config }: WidgetProps<Config>) {
   const [params, setParams] = useState<Map<string, Param>>(new Map());
   const [missing, setMissing] = useState<string[]>([]);
   const [edits, setEdits] = useState<Record<string, string | boolean>>({});
-  const [results, setResults] = useState<Record<string, Result>>({});
+  const [results, setResults] = useState<Record<string, SetResult>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const available = client.connected && client.can("parameters");
@@ -124,26 +112,44 @@ function ParamsWidget({ config }: WidgetProps<Config>) {
       setResults((r) => ({ ...r, [p.name]: { ok: false, text: error } }));
       return;
     }
-    const req: Param = { name: p.name, value };
-    if (p.type) req.type = p.type;
     setResults((r) => ({ ...r, [p.name]: { ok: true, text: "…" } }));
     try {
-      const res = await client.setParameters([req]);
-      const got = res.find((x) => x.name === p.name);
+      const { result, param: got } = await setParamValue(client, p, value);
       if (got) setParams((prev) => new Map(prev).set(got.name, got));
-      const ok = !!got && JSON.stringify(got.value) === JSON.stringify(value);
-      setResults((r) => ({
-        ...r,
-        [p.name]: ok ? { ok: true, text: "✓ set" } : { ok: false, text: "rejected: read-only, wrong type or refused by the node (see bridge log)" },
-      }));
-      client.addLog(ok ? "ok" : "warn", ok ? `Parameter ${p.name} = ${JSON.stringify(value)}` : `Parameter ${p.name}: set rejected, value unchanged`);
-      if (ok)
+      setResults((r) => ({ ...r, [p.name]: result }));
+      if (result.ok)
         setEdits((e) => {
           const { [p.name]: _, ...rest } = e;
           return rest;
         });
     } catch (e) {
       setResults((r) => ({ ...r, [p.name]: { ok: false, text: (e as Error).message } }));
+    }
+  };
+
+  // Dump of the parameters shown by the widget (the configured ones, or all of the node when the
+  // list is empty) in the `ros2 param dump` format, downloaded as a YAML file. Values are the
+  // node's current ones, kept up to date by the subscription.
+  const [saved, setSaved] = useState("");
+  const saveYaml = async () => {
+    setSaved("");
+    try {
+      const all = [...params.values()];
+      if (!all.length) throw new Error(`No parameters to save for ${node}`);
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+      const file = `${safeFileName(node.replace(/^\//, ""))}_params_${stamp}.yaml`;
+      const yaml = paramsToYaml(
+        node,
+        all.map((p) => ({ name: p.name.slice(node.length + 1), value: p.value, type: p.type })),
+        `Parameters of ${node}, saved by ROS2 Maker View on ${now.toISOString()}\nLoad with: --ros-args --params-file ${file}`,
+      );
+      downloadText(file, yaml, "application/x-yaml");
+      setSaved(`Saved ${all.length} parameters to ${file}`);
+      client.addLog("ok", `Saved ${all.length} parameters of ${node} to ${file}`);
+    } catch (e) {
+      setError(`Save failed: ${(e as Error).message}`);
     }
   };
 
@@ -157,7 +163,11 @@ function ParamsWidget({ config }: WidgetProps<Config>) {
         <button className="small" onClick={load} disabled={!available || !node || loading}>
           {loading ? "Loading…" : "Reload"}
         </button>
+        <button className="small" onClick={saveYaml} disabled={!available || !node} title="Download the parameters shown here as a YAML file (ros2 param dump format, usable with --params-file)">
+          Save YAML
+        </button>
       </div>
+      {saved && <div className="w-status ok">{saved}</div>}
       <div className="w-scroll">
         {!client.connected ? (
           <div className="muted small-text">offline</div>

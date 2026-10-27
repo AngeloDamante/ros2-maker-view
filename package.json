@@ -1,0 +1,36 @@
+{
+  "name": "ros2-maker-view",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build and run dynamic web views (widgets, plots, publishers, parameters) for ROS 2 topics through foxglove_bridge.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "node server/index.ts --dev",
+    "build": "tsc --noEmit && vite build",
+    "start": "node server/index.ts",
+    "export": "node server/export.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@foxglove/message-definition": "0.5.0",
+    "@foxglove/ros2idl-parser": "0.3.6",
+    "@foxglove/rosmsg": "5.0.5",
+    "@foxglove/rosmsg2-serialization": "3.1.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-grid-layout": "2.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "typescript": "6.0.3",
+    "vite": "8.3.4",
+    "vite-plugin-singlefile": "2.3.3"
+  }
+}

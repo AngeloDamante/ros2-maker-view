@@ -1,0 +1,282 @@
+{
+  "version": 1,
+  "title": "Multi-node demo (variables)",
+  "description": "One view for several identical nodes: pick the node in the header. Run two demo nodes (see README).",
+  "variables": [
+    {
+      "name": "node",
+      "label": "Node",
+      "default": "rmv_demo",
+      "options": [
+        {
+          "value": "rmv_demo",
+          "label": "Axis A",
+          "set": {
+            "color": "blue"
+          }
+        },
+        {
+          "value": "rmv_demo_b",
+          "label": "Axis B",
+          "set": {
+            "color": "orange"
+          }
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "widgets": [
+        {
+          "id": "w1",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 2,
+          "config": {
+            "text": "# ${node}\nEvery topic, node and service below is written as `${node}/…`: the selector in the header switches the whole view.",
+            "size": "md",
+            "muted": false
+          }
+        },
+        {
+          "id": "w2",
+          "type": "indicator",
+          "title": "State",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 4,
+          "config": {
+            "topic": "${node}/state",
+            "path": "data",
+            "layout": "all",
+            "otherColor": "warn",
+            "showRaw": false,
+            "states": [
+              {
+                "value": "0",
+                "label": "Idle",
+                "color": "gray"
+              },
+              {
+                "value": "1",
+                "label": "Running",
+                "color": "ok"
+              },
+              {
+                "value": "2",
+                "label": "Busy",
+                "color": "accent"
+              },
+              {
+                "value": "3",
+                "label": "Fault",
+                "color": "bad"
+              }
+            ]
+          }
+        },
+        {
+          "id": "w3",
+          "type": "value",
+          "title": "Sine",
+          "x": 12,
+          "y": 2,
+          "w": 5,
+          "h": 4,
+          "config": {
+            "topic": "${node}/sine",
+            "path": "data",
+            "unit": "",
+            "decimals": 3
+          }
+        },
+        {
+          "id": "w4",
+          "type": "bar",
+          "title": "Battery",
+          "x": 17,
+          "y": 2,
+          "w": 7,
+          "h": 4,
+          "config": {
+            "topic": "${node}/battery",
+            "path": "data",
+            "unit": "V",
+            "decimals": 2,
+            "min": 10,
+            "max": 13,
+            "baseColor": "bad",
+            "thresholds": [
+              {
+                "value": 11,
+                "color": "warn",
+                "label": ""
+              },
+              {
+                "value": 11.8,
+                "color": "ok",
+                "label": ""
+              }
+            ],
+            "orientation": "horizontal"
+          }
+        },
+        {
+          "id": "w5",
+          "type": "plot",
+          "title": "Position · ${node}",
+          "x": 0,
+          "y": 6,
+          "w": 16,
+          "h": 9,
+          "config": {
+            "series": [
+              {
+                "topic": "${node}/position",
+                "path": "data",
+                "label": "position",
+                "color": "${color}"
+              },
+              {
+                "topic": "${node}/setpoint",
+                "path": "data",
+                "label": "setpoint",
+                "color": "green",
+                "step": true
+              }
+            ],
+            "window": 30,
+            "yMin": null,
+            "yMax": null,
+            "lines": [],
+            "legend": true,
+            "decimals": 1
+          }
+        },
+        {
+          "id": "w6",
+          "type": "slider",
+          "title": "Setpoint",
+          "x": 16,
+          "y": 6,
+          "w": 8,
+          "h": 6,
+          "config": {
+            "topic": "${node}/setpoint",
+            "type": "std_msgs/msg/Float64",
+            "path": "data",
+            "template": {},
+            "min": -50,
+            "max": 50,
+            "step": 0.5,
+            "mode": "release",
+            "presets": [
+              "-30",
+              "0",
+              "30"
+            ],
+            "unit": "",
+            "autoStamp": true,
+            "feedbackTopic": "${node}/position",
+            "feedbackPath": "data",
+            "decimals": 1
+          }
+        },
+        {
+          "id": "w7",
+          "type": "buttons",
+          "title": "Enable",
+          "x": 16,
+          "y": 12,
+          "w": 8,
+          "h": 3,
+          "config": {
+            "topic": "${node}/enable",
+            "type": "std_msgs/msg/Bool",
+            "layout": "row",
+            "showActive": true,
+            "autoStamp": true,
+            "buttons": [
+              {
+                "label": "Disable",
+                "message": {
+                  "data": false
+                },
+                "color": "",
+                "confirm": false
+              },
+              {
+                "label": "Enable",
+                "message": {
+                  "data": true
+                },
+                "color": "ok",
+                "confirm": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "w8",
+          "type": "service",
+          "title": "Reset",
+          "x": 16,
+          "y": 15,
+          "w": 8,
+          "h": 4,
+          "config": {
+            "service": "${node}/reset",
+            "template": {},
+            "fields": [],
+            "buttonLabel": "Reset position",
+            "confirm": true,
+            "showResponse": true
+          }
+        },
+        {
+          "id": "w9",
+          "type": "log",
+          "title": "Log of ${node}",
+          "x": 0,
+          "y": 15,
+          "w": 16,
+          "h": 4,
+          "config": {
+            "source": "rosout",
+            "rosoutTopic": "/rosout",
+            "nodeFilter": "${node}",
+            "minLevel": "info",
+            "maxLines": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "params",
+      "title": "Parameters",
+      "widgets": [
+        {
+          "id": "w10",
+          "type": "params",
+          "title": "Parameters of ${node}",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 12,
+          "config": {
+            "node": "${node}",
+            "params": [],
+            "editable": true,
+            "showType": true
+          }
+        }
+      ]
+    }
+  ]
+}

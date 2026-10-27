@@ -1,0 +1,340 @@
+{
+  "version": 1,
+  "title": "Demo (rmv_demo node)",
+  "description": "Every widget type against tools/demo_node.py: run `python3 tools/demo_node.py` and the bridge.",
+  "bridgeUrl": "ws://{host}:8765",
+  "pages": [
+    {
+      "id": "monitor",
+      "title": "Monitor",
+      "widgets": [
+        {
+          "id": "w1",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 2,
+          "config": {
+            "text": "# ROS2 Maker View demo\nStart the demo node with `python3 tools/demo_node.py`, then press **Edit** to see how each widget is configured.",
+            "size": "md",
+            "muted": false
+          }
+        },
+        {
+          "id": "w2",
+          "type": "value",
+          "title": "Sine",
+          "x": 0,
+          "y": 2,
+          "w": 4,
+          "h": 4,
+          "config": {
+            "topic": "/rmv_demo/sine",
+            "path": "data",
+            "unit": "",
+            "decimals": 3
+          }
+        },
+        {
+          "id": "w3",
+          "type": "bar",
+          "title": "Battery",
+          "x": 4,
+          "y": 2,
+          "w": 8,
+          "h": 4,
+          "config": {
+            "topic": "/rmv_demo/battery",
+            "path": "data",
+            "unit": "V",
+            "decimals": 2,
+            "min": 10,
+            "max": 13,
+            "baseColor": "bad",
+            "thresholds": [
+              {
+                "value": 11,
+                "color": "warn",
+                "label": "11 V"
+              },
+              {
+                "value": 11.8,
+                "color": "ok",
+                "label": "11.8 V"
+              }
+            ],
+            "orientation": "horizontal"
+          }
+        },
+        {
+          "id": "w4",
+          "type": "indicator",
+          "title": "State",
+          "x": 12,
+          "y": 2,
+          "w": 12,
+          "h": 4,
+          "config": {
+            "topic": "/rmv_demo/state",
+            "path": "data",
+            "layout": "all",
+            "otherColor": "warn",
+            "showRaw": false,
+            "states": [
+              {
+                "value": "0",
+                "label": "Idle",
+                "color": "gray"
+              },
+              {
+                "value": "1",
+                "label": "Running",
+                "color": "ok"
+              },
+              {
+                "value": "2",
+                "label": "Busy",
+                "color": "accent"
+              },
+              {
+                "value": "3",
+                "label": "Fault",
+                "color": "bad"
+              }
+            ]
+          }
+        },
+        {
+          "id": "w5",
+          "type": "plot",
+          "title": "Signals",
+          "x": 0,
+          "y": 6,
+          "w": 16,
+          "h": 10,
+          "config": {
+            "series": [
+              {
+                "topic": "/rmv_demo/sine",
+                "path": "data",
+                "label": "sine",
+                "color": "blue"
+              },
+              {
+                "topic": "/rmv_demo/position",
+                "path": "data",
+                "label": "position / 20",
+                "color": "orange",
+                "scale": 0.05
+              },
+              {
+                "topic": "/rmv_demo/setpoint",
+                "path": "data",
+                "label": "setpoint / 20",
+                "color": "green",
+                "scale": 0.05,
+                "step": true
+              }
+            ],
+            "window": 30,
+            "yMin": null,
+            "yMax": null,
+            "legend": true,
+            "decimals": 3,
+            "lines": [
+              {
+                "value": 1,
+                "label": "+amplitude",
+                "color": "warn"
+              },
+              {
+                "value": -1,
+                "label": "-amplitude",
+                "color": "warn"
+              }
+            ]
+          }
+        },
+        {
+          "id": "w6",
+          "type": "plot",
+          "title": "State (relative topic name)",
+          "x": 16,
+          "y": 6,
+          "w": 8,
+          "h": 5,
+          "config": {
+            "series": [
+              {
+                "topic": "rmv_demo/state",
+                "path": "data",
+                "label": "state",
+                "color": "teal",
+                "step": true
+              }
+            ],
+            "window": 30,
+            "yMin": -0.5,
+            "yMax": 3.5,
+            "legend": true,
+            "lines": []
+          }
+        },
+        {
+          "id": "w7",
+          "type": "log",
+          "title": "Events",
+          "x": 16,
+          "y": 11,
+          "w": 8,
+          "h": 5,
+          "config": {
+            "source": "both",
+            "rosoutTopic": "/rosout",
+            "nodeFilter": "rmv_demo",
+            "minLevel": "debug",
+            "maxLines": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "title": "Control & parameters",
+      "widgets": [
+        {
+          "id": "w8",
+          "type": "slider",
+          "title": "Position setpoint",
+          "x": 0,
+          "y": 0,
+          "w": 8,
+          "h": 6,
+          "config": {
+            "topic": "/rmv_demo/setpoint",
+            "type": "std_msgs/msg/Float64",
+            "path": "data",
+            "template": {},
+            "min": -50,
+            "max": 50,
+            "step": 0.5,
+            "mode": "release",
+            "presets": [
+              "-30",
+              "-10",
+              "0",
+              "10",
+              "30"
+            ],
+            "unit": "",
+            "autoStamp": true,
+            "feedbackTopic": "/rmv_demo/position",
+            "feedbackPath": "data",
+            "decimals": 1
+          }
+        },
+        {
+          "id": "w9",
+          "type": "buttons",
+          "title": "State machine",
+          "x": 8,
+          "y": 0,
+          "w": 8,
+          "h": 3,
+          "config": {
+            "topic": "/rmv_demo/enable",
+            "type": "std_msgs/msg/Bool",
+            "layout": "row",
+            "showActive": true,
+            "autoStamp": true,
+            "buttons": [
+              {
+                "label": "Disable",
+                "message": {
+                  "data": false
+                },
+                "color": "",
+                "confirm": false
+              },
+              {
+                "label": "Enable",
+                "message": {
+                  "data": true
+                },
+                "color": "ok",
+                "confirm": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "w10",
+          "type": "service",
+          "title": "Reset service",
+          "x": 8,
+          "y": 3,
+          "w": 8,
+          "h": 4,
+          "config": {
+            "service": "/rmv_demo/reset",
+            "template": {},
+            "fields": [],
+            "buttonLabel": "Reset position",
+            "confirm": true,
+            "showResponse": true
+          }
+        },
+        {
+          "id": "w11",
+          "type": "publish",
+          "title": "Publisher form",
+          "x": 16,
+          "y": 0,
+          "w": 8,
+          "h": 7,
+          "config": {
+            "topic": "/rmv_demo/setpoint",
+            "type": "std_msgs/msg/Float64",
+            "template": {
+              "data": 12.5
+            },
+            "fields": [],
+            "autoStamp": true,
+            "sendLabel": "Publish setpoint",
+            "repeatHz": 5
+          }
+        },
+        {
+          "id": "w12",
+          "type": "params",
+          "title": "Parameters of /rmv_demo",
+          "x": 0,
+          "y": 7,
+          "w": 12,
+          "h": 10,
+          "config": {
+            "node": "/rmv_demo",
+            "params": [],
+            "editable": true,
+            "showType": true
+          }
+        },
+        {
+          "id": "w13",
+          "type": "message",
+          "title": "Raw /rosout",
+          "x": 12,
+          "y": 7,
+          "w": 12,
+          "h": 10,
+          "config": {
+            "topic": "/rosout",
+            "path": "",
+            "maxArray": 20
+          }
+        }
+      ]
+    }
+  ]
+}

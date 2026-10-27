@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output and standalone exports
+dist/
+exports/
+
+# Python (tools/)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Logs and runtime files
+*.log
+npm-debug.log*
+.server.pid
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Temporary files written by the view store
+views/.*.tmp

@@ -82,6 +82,11 @@ The bridge's default configuration enables everything the views use: `clientPubl
   widget's configuration (changes apply live); drag a widget by its title bar to move it, resize
   it from the bottom-right corner. Sections and dividers have no title bar: drag them anywhere,
   their ⚙ ⧉ ✕ buttons appear on hover.
+- **Groups** have their own grid: drop widgets into a group from the panel, or drag an existing
+  widget over the group to move it in, and out of the group onto the page to take it out. Dragging
+  the group's title bar moves the whole block; only its width is resizable, the height follows the
+  content. A *collapsible* group gets an arrow in its title bar (in the view, not while editing);
+  the open/closed state is remembered by the browser. Groups cannot contain groups.
   Pages: ＋ adds one, double-click a tab (or ✎) to rename, ◀ ▶ reorder, ✕ delete.
 - **Save** (Ctrl+S) writes `views/<id>.json`. **⋯ → Export standalone HTML** downloads a single file.
 - **☾ Dark / ☀ Light** in the top bar switches the theme (light by default; the choice is remembered by the browser).
@@ -101,6 +106,7 @@ The bridge's default configuration enables everything the views use: `clientPubl
 | **Slider / setpoint** | Numeric setpoint with slider, input and presets, optional measured feedback topic; once per change or Stream/Stop at a rate. |
 | **Service call** | Calls a service (e.g. `std_srvs/Trigger`) with a request form and shows the response. |
 | **Parameters** | Reads and sets a node's parameters. |
+| **Group** | Box with a title containing other widgets: they move with it, its height follows the content, optionally collapsible. |
 | **Section** | Title followed by a line, to separate the blocks of a page (color, line style, size; `${var}` allowed). |
 | **Divider** | Horizontal or vertical line, solid/dashed/dotted, any thickness and color. |
 | **Text / heading** | Titles and notes. |

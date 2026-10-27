@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ReactGridLayout, { useContainerWidth, type Layout, type LayoutItem } from "react-grid-layout";
+import type { Layout, LayoutItem } from "react-grid-layout";
 import { api } from "../api.ts";
 import { BridgeClient } from "../bridge/client.ts";
 import { BridgeProvider, useBridge, useBridgeVersion } from "../bridge/react.tsx";
 import { downloadJson, downloadStandalone } from "../lib/exportHtml.ts";
 import { computeVarValues, formatOptionLines, optionLabel, optionValue, parseOptionLines, type VarValues } from "../lib/vars.ts";
-import { GRID_COLS, GRID_ROW_HEIGHT, newId, normalizeView, type Page, type ViewDoc, type WidgetDoc } from "../types.ts";
+import * as tree from "../lib/tree.ts";
+import { GRID_COLS, newId, normalizeView, type Page, type ViewDoc, type WidgetDoc } from "../types.ts";
 import { widgetDef } from "../widgets/index.ts";
 import type { FieldSpec } from "../widgets/types.ts";
 import { BridgeDatalists, ConfigForm } from "./ConfigForm.tsx";
 import { Drawer, lsGet, lsSet, Menu, MenuItem, ThemeToggle } from "./ui.tsx";
-import { WidgetFrame } from "./WidgetFrame.tsx";
-import { paletteDragSize, takeDraggedType, WidgetPalette } from "./WidgetPalette.tsx";
+import { EditorContext, WidgetGrid, type EditorApi } from "./WidgetGrid.tsx";
+import { WidgetPalette } from "./WidgetPalette.tsx";
 
 interface Props {
   id: string;
@@ -53,10 +54,6 @@ function defaultBridgeUrl(id: string, doc: ViewDoc): string {
   const host = location.hostname || "localhost";
   const fromQuery = new URLSearchParams(location.search).get("bridge");
   return (fromQuery || lsGet(`rmv.bridge.${id}`) || doc.bridgeUrl || `ws://{host}:8765`).replace("{host}", host);
-}
-
-function bottomOf(widgets: WidgetDoc[]): number {
-  return widgets.reduce((m, w) => Math.max(m, w.y + w.h), 0);
 }
 
 /** Widgets with the grid positions of `layout`; the same array when nothing moved. */
@@ -147,11 +144,20 @@ function ViewEditor({ id, standalone, readonly, initialDoc, initialPage }: Props
     return () => window.removeEventListener("beforeunload", onUnload);
   }, [dirty]);
 
-  const updatePage = useCallback(
-    (fn: (p: Page) => Page) => setDoc((d) => ({ ...d, pages: d.pages.map((p) => (p.id === page.id ? fn(p) : p)) })),
+  /** Updates the widget tree of the current page (group heights follow their children). */
+  const updateWidgets = useCallback(
+    (fn: (ws: WidgetDoc[]) => WidgetDoc[]) =>
+      setDoc((d) => ({
+        ...d,
+        pages: d.pages.map((p) => {
+          if (p.id !== page.id) return p;
+          const widgets = tree.autoSizeGroups(fn(p.widgets));
+          return widgets === p.widgets ? p : { ...p, widgets };
+        }),
+      })),
     [page.id],
   );
-  const updateWidget = (wid: string, fn: (w: WidgetDoc) => WidgetDoc) => updatePage((p) => ({ ...p, widgets: p.widgets.map((w) => (w.id === wid ? fn(w) : w)) }));
+  const updateWidget = (wid: string, fn: (w: WidgetDoc) => WidgetDoc) => updateWidgets((ws) => tree.updateWidget(ws, wid, fn));
 
   const save = async () => {
     const json = JSON.stringify(doc);
@@ -186,24 +192,56 @@ function ViewEditor({ id, standalone, readonly, initialDoc, initialPage }: Props
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  /** Adds a widget at the bottom, or where it was dropped (`layout` = grid positions after the drop). */
-  const addWidget = (type: string, drop?: { item: LayoutItem; layout: Layout }) => {
+  /**
+   * Adds a widget at the bottom of the page, or where it was dropped in a container
+   * (`layout` = positions of the container's widgets after the drop).
+   */
+  const addWidget = (type: string, drop?: { container: string | null; item: LayoutItem; layout: Layout }) => {
     const def = widgetDef(type);
     if (!def) return;
     const w: WidgetDoc = drop
       ? { id: newId("w"), type, x: drop.item.x, y: drop.item.y, w: drop.item.w, h: drop.item.h, config: def.defaults() }
-      : { id: newId("w"), type, x: 0, y: bottomOf(page.widgets), w: def.size.w, h: def.size.h, config: def.defaults() };
-    updatePage((p) => ({ ...p, widgets: [...(drop ? applyLayout(p.widgets, drop.layout) : p.widgets), w] }));
+      : { id: newId("w"), type, x: 0, y: tree.bottomOf(page.widgets), w: def.size.w, h: def.size.h, config: def.defaults() };
+    updateWidgets((ws) => tree.mapContainer(ws, drop ? drop.container : null, (list) => [...(drop ? applyLayout(list, drop.layout) : list), w]));
     setSettingsOpen(false);
     setConfigId(w.id);
   };
-  const duplicateWidget = (w: WidgetDoc) => {
-    const copy: WidgetDoc = { ...structuredClone(w), id: newId("w"), y: bottomOf(page.widgets) };
-    updatePage((p) => ({ ...p, widgets: [...p.widgets, copy] }));
-  };
-  const deleteWidget = (wid: string) => {
-    updatePage((p) => ({ ...p, widgets: p.widgets.filter((w) => w.id !== wid) }));
-    if (configId === wid) setConfigId(null);
+
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
+    try {
+      return JSON.parse(lsGet(`rmv.collapsed.${id}`) || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+  const editor: EditorApi = {
+    editing,
+    vars,
+    selectedId: configId,
+    isCollapsed: (gid) => collapsed[gid] ?? !!tree.findWidget(page.widgets, gid)?.widget.config.startCollapsed,
+    toggleCollapsed: (gid) => {
+      const next = { ...collapsed, [gid]: !editor.isCollapsed(gid) };
+      setCollapsed(next);
+      lsSet(`rmv.collapsed.${id}`, JSON.stringify(next));
+    },
+    configure: (wid) => {
+      setSettingsOpen(false);
+      setConfigId(wid);
+    },
+    duplicate: (wid) =>
+      updateWidgets((ws) => {
+        const found = tree.findWidget(ws, wid);
+        if (!found) return ws;
+        return tree.mapContainer(ws, found.parent, (list) => [...list, { ...tree.cloneWithNewIds(found.widget, () => newId("w")), y: tree.bottomOf(list) }]);
+      }),
+    remove: (wid) => {
+      updateWidgets((ws) => tree.removeWidget(ws, wid));
+      if (configId === wid) setConfigId(null);
+    },
+    layoutChanged: (container, layout) => updateWidgets((ws) => tree.mapContainer(ws, container, (list) => applyLayout(list, layout))),
+    dropNew: (container, type, item, layout) => addWidget(type, { container, item, layout }),
+    move: (wid, target, x, y, cols) => updateWidgets((ws) => tree.moveWidget(ws, wid, target, x, y, cols)),
   };
 
   const addPage = () => {
@@ -227,7 +265,7 @@ function ViewEditor({ id, standalone, readonly, initialDoc, initialPage }: Props
     setPageId(doc.pages[i === 0 ? 1 : i - 1]!.id);
   };
 
-  const configWidget = page.widgets.find((w) => w.id === configId);
+  const configWidget = configId ? tree.findWidget(page.widgets, configId)?.widget : undefined;
   const configDef = configWidget ? widgetDef(configWidget.type) : undefined;
 
   const setVar = (name: string, value: string) => {
@@ -331,25 +369,9 @@ function ViewEditor({ id, standalone, readonly, initialDoc, initialPage }: Props
       <div className="view-body">
       {editing && <WidgetPalette onAdd={(type) => addWidget(type)} />}
       <main className="canvas">
-        <PageGrid
-          page={page}
-          editing={editing}
-          vars={vars}
-          selectedId={configId}
-          onLayout={(layout) =>
-            updatePage((p) => {
-              const widgets = applyLayout(p.widgets, layout);
-              return widgets === p.widgets ? p : { ...p, widgets };
-            })
-          }
-          onDropWidget={(type, item, layout) => addWidget(type, { item, layout })}
-          onConfigure={(wid) => {
-            setSettingsOpen(false);
-            setConfigId(wid);
-          }}
-          onDuplicate={duplicateWidget}
-          onDelete={deleteWidget}
-        />
+        <EditorContext.Provider value={editor}>
+          <WidgetGrid key={page.id} container={null} widgets={page.widgets} cols={GRID_COLS} />
+        </EditorContext.Provider>
         {!page.widgets.length && (
           <div className="empty-page">
             {editing ? (
@@ -530,88 +552,5 @@ function PageTabs({
         </span>
       )}
     </nav>
-  );
-}
-
-function PageGrid({
-  page,
-  editing,
-  vars,
-  selectedId,
-  onLayout,
-  onDropWidget,
-  onConfigure,
-  onDuplicate,
-  onDelete,
-}: {
-  page: Page;
-  editing: boolean;
-  vars: VarValues;
-  selectedId: string | null;
-  onLayout: (l: Layout) => void;
-  onDropWidget: (type: string, item: LayoutItem, layout: Layout) => void;
-  onConfigure: (id: string) => void;
-  onDuplicate: (w: WidgetDoc) => void;
-  onDelete: (id: string) => void;
-}) {
-  const { width, containerRef, mounted } = useContainerWidth();
-  const layout = useMemo(
-    () =>
-      page.widgets.map((w) => {
-        const def = widgetDef(w.type);
-        return { i: w.id, x: w.x, y: w.y, w: w.w, h: w.h, minW: def?.minSize?.w ?? 1, minH: def?.minSize?.h ?? 1 };
-      }),
-    [page.widgets],
-  );
-  const frame = (w: WidgetDoc) => (
-    <WidgetFrame
-      widget={w}
-      editing={editing}
-      selected={selectedId === w.id}
-      vars={vars}
-      onConfigure={() => onConfigure(w.id)}
-      onDuplicate={() => onDuplicate(w)}
-      onDelete={() => onDelete(w.id)}
-    />
-  );
-  // Phones: a single column in reading order instead of a squeezed grid.
-  const stacked = mounted && width < 700 && !editing;
-  return (
-    <div ref={containerRef} className="grid-wrap">
-      {stacked ? (
-        <div className="stack">
-          {[...page.widgets]
-            .sort((a, b) => a.y - b.y || a.x - b.x)
-            .map((w) => (
-              <div key={w.id} className="stack-item" style={{ height: w.h * GRID_ROW_HEIGHT + (w.h - 1) * 10 }}>
-                {frame(w)}
-              </div>
-            ))}
-        </div>
-      ) : (
-        mounted && (
-          <ReactGridLayout
-            key={page.id}
-            layout={layout}
-            width={width}
-            gridConfig={{ cols: GRID_COLS, rowHeight: GRID_ROW_HEIGHT, margin: [10, 10], containerPadding: [0, 0] }}
-            dragConfig={{ enabled: editing, handle: ".wf-head, .wf-drag", cancel: ".wf-actions" }}
-            resizeConfig={{ enabled: editing, handles: ["se"] }}
-            dropConfig={{ enabled: editing, defaultItem: { w: 6, h: 4 }, onDragOver: paletteDragSize }}
-            onDrop={(l, item) => {
-              const type = takeDraggedType();
-              if (type && item) onDropWidget(type, item, l.filter((x) => x.i !== item.i));
-            }}
-            onLayoutChange={(l) => {
-              if (editing) onLayout(l);
-            }}
-          >
-            {page.widgets.map((w) => (
-              <div key={w.id}>{frame(w)}</div>
-            ))}
-          </ReactGridLayout>
-        )
-      )}
-    </div>
   );
 }

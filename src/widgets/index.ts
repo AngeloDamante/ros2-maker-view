@@ -12,6 +12,7 @@ import { serviceWidget } from "./ServiceWidget.tsx";
 import { paramsWidget } from "./ParamsWidget.tsx";
 import { textWidget } from "./TextWidget.tsx";
 import { dividerWidget, sectionWidget } from "./SectionWidget.tsx";
+import { groupWidget } from "./GroupWidget.tsx";
 
 /** All widget types, in palette order. Add new widgets here. */
 export const WIDGETS: WidgetDef[] = [
@@ -26,6 +27,7 @@ export const WIDGETS: WidgetDef[] = [
   sliderWidget,
   serviceWidget,
   paramsWidget,
+  groupWidget,
   sectionWidget,
   dividerWidget,
   textWidget,

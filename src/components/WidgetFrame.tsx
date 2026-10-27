@@ -1,8 +1,10 @@
-import { Component, useMemo, useState, type ReactNode } from "react";
+import { Component, useContext, useMemo, useState, type ReactNode } from "react";
 import type { WidgetDoc } from "../types.ts";
 import type { VarValues } from "../lib/vars.ts";
 import { widgetDef } from "../widgets/index.ts";
 import { resolveConfig } from "../widgets/resolve.ts";
+import { cssColor } from "../lib/colors.ts";
+import { EditorContext } from "./WidgetGrid.tsx";
 
 class ErrorBoundary extends Component<{ children: ReactNode; resetKey: string }, { error: Error | null; key: string }> {
   state = { error: null as Error | null, key: this.props.resetKey };
@@ -39,8 +41,13 @@ export function WidgetFrame({
   const [armDelete, setArmDelete] = useState(false);
   const config = useMemo(() => (def ? resolveConfig({ ...def.defaults(), ...widget.config }, def.fields, vars) : {}), [def, widget.config, vars]);
   const title = widget.title ? widget.title.replace(/\$\{(\w+)\}/g, (all, n: string) => vars[n] ?? all) : "";
+  const editor = useContext(EditorContext);
   const compact = !!def?.compact;
-  const showHead = !compact && (editing || !!title);
+  const container = !!def?.container;
+  const showHead = container || (!compact && (editing || !!title));
+  const collapsible = container && !editing && !!widget.config.collapsible && !!editor;
+  const collapsed = collapsible && editor!.isCollapsed(widget.id);
+  const accent = container && widget.config.color ? cssColor(widget.config.color) : undefined;
   const actions = (
     <span className="wf-actions" onMouseLeave={() => setArmDelete(false)}>
       <button className="icon" title="Configure" onClick={onConfigure}>
@@ -59,10 +66,15 @@ export function WidgetFrame({
     </span>
   );
   return (
-    <div className={"wf" + (editing ? " editing" : "") + (selected ? " selected" : "") + (compact ? " compact" : "")} data-type={widget.type}>
+    <div
+      className={"wf" + (editing ? " editing" : "") + (selected ? " selected" : "") + (compact ? " compact" : "") + (container ? " container" : "") + (container && widget.config.tint !== false ? " tint" : "") + (collapsed ? " collapsed" : "")}
+      data-type={widget.type}
+      style={accent ? ({ "--group-color": accent } as React.CSSProperties) : undefined}
+    >
       {showHead && (
-        <div className="wf-head">
-          <span className={"wf-title" + (title ? "" : " muted")}>{title || def?.label || widget.type}</span>
+        <div className="wf-head" onClick={collapsible ? () => editor!.toggleCollapsed(widget.id) : undefined}>
+          {collapsible && <span className="wf-chevron">{collapsed ? "▸" : "▾"}</span>}
+          <span className={"wf-title" + (title || container ? "" : " muted")}>{title || (container && !editing ? "" : def?.label || widget.type)}</span>
           {editing && actions}
         </div>
       )}

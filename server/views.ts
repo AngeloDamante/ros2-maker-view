@@ -4,6 +4,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { normalizeView, type ViewDoc, type ViewSummary } from "../src/types.ts";
+import { countWidgets } from "../src/lib/tree.ts";
 
 export const VIEW_ID_RE = /^[A-Za-z0-9][\w-]{0,63}$/;
 
@@ -44,7 +45,7 @@ export class ViewStore {
           title: doc.title,
           description: doc.description,
           pages: doc.pages.length,
-          widgets: doc.pages.reduce((n, p) => n + p.widgets.length, 0),
+          widgets: doc.pages.reduce((n, p) => n + countWidgets(p.widgets), 0),
           updated: stat.mtime.toISOString(),
         });
       } catch (e) {

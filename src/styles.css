@@ -124,7 +124,9 @@ button.armed { background: var(--bad-soft) !important; }
 /* Canvas & grid */
 .canvas { flex: 1; min-width: 0; overflow: auto; padding: 12px 16px 40px; position: relative; }
 /* In edit mode the grid covers the visible area, so widgets can be dropped anywhere. */
-.view.is-editing .react-grid-layout { min-height: calc(100vh - 120px); }
+.view.is-editing [data-grid-container="page"] > .react-grid-layout { min-height: calc(100vh - 120px); }
+/* The item being dragged (or the group containing it) stays above its neighbours. */
+.react-grid-item:has(.react-draggable-dragging) { z-index: 5; }
 .view.has-drawer .canvas, .view.has-drawer .topbar { margin-right: var(--drawer-w); }
 .grid-wrap { position: relative; min-height: 40px; }
 .react-grid-layout { position: relative; }
@@ -317,6 +319,26 @@ table.params tr.missing td { color: var(--muted); }
 .w-section.size-lg .section-title { font-size: 20px; }
 
 .w-divider { height: 100%; display: flex; align-items: center; justify-content: center; }
+
+/* Group: the title row (1 px border + 28 px bar + 1 px line) plus 5 + 4 px of padding takes exactly
+   one grid row (30 px) + one gap (10 px), so h = 1 + rows of the nested grid. */
+.wf.container { overflow: visible; border-color: color-mix(in srgb, var(--group-color, var(--border)) 55%, var(--border)); }
+.wf.container.tint { background: color-mix(in srgb, var(--group-color, var(--c-muted)) 7%, var(--bg)); }
+.wf.container > .wf-head {
+  height: 29px; min-height: 29px; padding: 0 6px 0 12px; border-bottom: 1px solid color-mix(in srgb, var(--group-color, var(--border)) 55%, var(--border));
+  color: var(--group-color, var(--muted)); font-size: 12px;
+}
+.wf.container:not(.editing) > .wf-head { background: transparent; }
+.wf.container.collapsed > .wf-head { border-bottom: 0; }
+.wf.container > .wf-head:has(.wf-chevron) { cursor: pointer; user-select: none; }
+.wf-chevron { width: 14px; flex: none; }
+.wf.container > .wf-body { padding: 5px 10px 4px; overflow: visible; container-type: normal; }
+.group-body { position: relative; min-height: 70px; }
+.group-body .react-grid-layout { min-height: 70px; }
+.group-empty {
+  position: absolute; inset: 0 0 6px; display: grid; place-items: center; pointer-events: none;
+  color: var(--muted); font-size: 12px; border: 2px dashed var(--border); border-radius: 8px;
+}
 .w-divider.horizontal > span { width: 100%; }
 .w-divider.vertical > span { height: 100%; }
 

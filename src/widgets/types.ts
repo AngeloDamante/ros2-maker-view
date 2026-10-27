@@ -64,6 +64,8 @@ export interface WidgetDef {
    * whole widget is the drag handle and the actions appear on hover.
    */
   compact?: boolean;
+  /** Container (group): the title bar is always shown and the widget renders a nested grid. */
+  container?: boolean;
   defaults: () => Record<string, any>;
   fields: FieldSpec[];
   component: ComponentType<WidgetProps<any>>;

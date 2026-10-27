@@ -7,10 +7,10 @@ import { WIDGETS, widgetDef } from "../widgets/index.ts";
 /** Widget type being dragged from the palette (dataTransfer is unreadable during dragover). */
 let draggingType: string | null = null;
 
-/** Size of the widget being dragged, or false when the drag is not from the palette. */
-export function paletteDragSize(): { w: number; h: number } | false {
+/** Type and size of the widget being dragged, or false when the drag is not from the palette. */
+export function paletteDragSize(): { type: string; w: number; h: number } | false {
   const def = draggingType ? widgetDef(draggingType) : undefined;
-  return def ? { ...def.size } : false;
+  return def ? { type: def.type, ...def.size } : false;
 }
 
 export function takeDraggedType(): string | null {
@@ -74,6 +74,14 @@ const ICONS: Record<string, ReactNode> = {
     </>
   ),
   divider: <path d="M1.5 8h13" strokeDasharray="2.5 2" />,
+  group: (
+    <>
+      <rect x="1.5" y="2.5" width="13" height="11" rx="2" />
+      <path d="M1.5 5.5h13" />
+      <rect x="3.5" y="7.5" width="4" height="4" rx="1" fill="currentColor" />
+      <rect x="8.5" y="7.5" width="4" height="4" rx="1" />
+    </>
+  ),
 };
 
 export function WidgetIcon({ type }: { type: string }) {

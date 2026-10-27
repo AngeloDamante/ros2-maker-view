@@ -55,17 +55,7 @@ export function normalizeView(raw: any): ViewDoc {
   const pages: Page[] = raw.pages.map((p: any, i: number) => ({
     id: typeof p?.id === "string" && p.id ? p.id : newId("p"),
     title: typeof p?.title === "string" ? p.title : `Page ${i + 1}`,
-    widgets: Array.isArray(p?.widgets)
-      ? p.widgets
-          .filter((w: any) => w && typeof w.type === "string")
-          .map((w: any) => ({
-            id: typeof w.id === "string" && w.id ? w.id : newId("w"),
-            type: w.type,
-            ...(typeof w.title === "string" ? { title: w.title } : {}),
-            x: num(w.x, 0), y: num(w.y, 0), w: num(w.w, 6), h: num(w.h, 4),
-            config: w.config && typeof w.config === "object" ? w.config : {},
-          }))
-      : [],
+    widgets: normalizeWidgets(p?.widgets, true),
   }));
   if (!pages.length) pages.push({ id: newId("p"), title: "Main", widgets: [] });
   return {
@@ -74,6 +64,24 @@ export function normalizeView(raw: any): ViewDoc {
     title: typeof raw.title === "string" && raw.title ? raw.title : "Untitled view",
     pages,
   };
+}
+
+/** Valid widgets of a list; group children are normalized too (groups are not nested). */
+function normalizeWidgets(list: unknown, allowGroups: boolean): WidgetDoc[] {
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter((w: any) => w && typeof w.type === "string" && (allowGroups || w.type !== "group"))
+    .map((w: any) => {
+      const config = w.config && typeof w.config === "object" ? { ...w.config } : {};
+      if (w.type === "group") config.widgets = normalizeWidgets(config.widgets, false);
+      return {
+        id: typeof w.id === "string" && w.id ? w.id : newId("w"),
+        type: w.type,
+        ...(typeof w.title === "string" ? { title: w.title } : {}),
+        x: num(w.x, 0), y: num(w.y, 0), w: num(w.w, 6), h: num(w.h, 4),
+        config,
+      };
+    });
 }
 
 function num(v: unknown, d: number): number {

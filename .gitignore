@@ -24,3 +24,5 @@ npm-debug.log*
 
 # Temporary files written by the view store
 views/.*.tmp
+
+CLAUDE.md

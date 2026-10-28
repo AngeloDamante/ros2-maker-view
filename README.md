@@ -87,7 +87,7 @@ The bridge's default configuration enables everything the views use: `clientPubl
   the group's title bar moves the whole block; only its width is resizable, the height follows the
   content. A *collapsible* group gets an arrow in its title bar (in the view, not while editing);
   the open/closed state is remembered by the browser. Groups cannot contain groups.
-  Pages: ＋ adds one, double-click a tab (or ✎) to rename, ◀ ▶ reorder, ✕ delete.
+  Pages: ＋ adds one, double-click a tab (or ✎) to rename, ⧉ duplicate, ◀ ▶ reorder, ✕ delete.
 - **Save** (Ctrl+S) writes `views/<id>.json`. **⋯ → Export standalone HTML** downloads a single file.
 - **☾ Dark / ☀ Light** in the top bar switches the theme (light by default; the choice is remembered by the browser).
 

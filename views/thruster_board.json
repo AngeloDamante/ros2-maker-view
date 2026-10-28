@@ -3,163 +3,361 @@
   "title": "Thruster Board",
   "pages": [
     {
-      "id": "pjqsx1sb",
-      "title": "Motors",
+      "id": "pk3spyik",
+      "title": "AK60Pitch",
       "widgets": [
         {
-          "id": "wxbt6pbv",
+          "id": "wjp2l3yc",
           "type": "group",
-          "title": "AK60Yaw",
+          "title": "Feedback",
+          "x": 0,
+          "y": 3,
+          "w": 6,
+          "h": 20,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "waqjutt5",
+                "type": "indicator",
+                "title": "State",
+                "x": 0,
+                "y": 4,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "/component/ak60Pitch0/param/debug/calib_state",
+                  "path": "data",
+                  "states": [
+                    {
+                      "value": "0",
+                      "label": "Not Calibrated",
+                      "color": "muted"
+                    },
+                    {
+                      "value": "1",
+                      "label": "GoingToFirstSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "2",
+                      "label": "GoingToSecondSide",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "3",
+                      "label": "CollectionData",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "4",
+                      "label": "GoingToZero",
+                      "color": "blue"
+                    },
+                    {
+                      "value": "5",
+                      "label": "Calibrated",
+                      "color": "ok"
+                    }
+                  ],
+                  "otherColor": "warn",
+                  "showRaw": true,
+                  "layout": "single"
+                }
+              },
+              {
+                "id": "wp4d5wh8",
+                "type": "value",
+                "title": "Range",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "/component/ak60Pitch0/param/debug/feasible_range",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              },
+              {
+                "id": "wf04xhbx",
+                "type": "bar",
+                "title": "current",
+                "x": 0,
+                "y": 12,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "/component/ak60Pitch0/param/debug/current_a",
+                  "path": "data",
+                  "min": 0,
+                  "max": 1,
+                  "baseColor": "ok",
+                  "thresholds": [
+                    {
+                      "value": 0.8,
+                      "color": "warn",
+                      "label": ""
+                    }
+                  ],
+                  "orientation": "horizontal",
+                  "abs": true
+                }
+              },
+              {
+                "id": "wnyywy9r",
+                "type": "buttons",
+                "x": 0,
+                "y": 16,
+                "w": 6,
+                "h": 3,
+                "config": {
+                  "target": "topic",
+                  "topic": "/bus/device",
+                  "node": "",
+                  "param": "",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "row",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "Active Calibration",
+                      "message": {
+                        "stamp": {
+                          "sec": 0,
+                          "nanosec": 0
+                        },
+                        "id": 2,
+                        "type": 0,
+                        "message": 28,
+                        "payload_size": 2,
+                        "payload_data": [
+                          115,
+                          0
+                        ]
+                      },
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "w01q7pef",
+                "type": "value",
+                "title": "Degree",
+                "x": 0,
+                "y": 8,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "/component/ak60Pitch0/param/debug/position_deg",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wpepn2v4",
+          "type": "divider",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "config": {
+            "orientation": "horizontal",
+            "line": "solid",
+            "thickness": 1,
+            "color": ""
+          }
+        },
+        {
+          "id": "wcivt2d8",
+          "type": "group",
+          "title": "CMD",
+          "x": 6,
+          "y": 3,
+          "w": 6,
+          "h": 20,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wqhe46ny",
+                "type": "publish",
+                "title": "alpha/setpoint",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 8,
+                "config": {
+                  "topic": "/effector/vector_thruster/alpha/setpoint",
+                  "type": "",
+                  "template": {},
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
+                }
+              },
+              {
+                "id": "wdgsxerl",
+                "type": "buttons",
+                "title": "Invert",
+                "x": 0,
+                "y": 8,
+                "w": 6,
+                "h": 3,
+                "config": {
+                  "target": "param",
+                  "topic": "",
+                  "node": "/ak60Pitch0",
+                  "param": "inverted",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "row",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "False",
+                      "message": {
+                        "data": 0
+                      },
+                      "value": "false",
+                      "color": "",
+                      "confirm": false
+                    },
+                    {
+                      "label": "True",
+                      "message": {
+                        "data": 1
+                      },
+                      "value": "true",
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "wgvi77mt",
+                "type": "param",
+                "title": "Cruide Speed [deg_s]",
+                "x": 0,
+                "y": 11,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "node": "/ak60Pitch0",
+                  "param": "w_cruise_deg_s",
+                  "unit": "",
+                  "decimals": null,
+                  "editable": true
+                }
+              },
+              {
+                "id": "wf9zupn8",
+                "type": "param",
+                "title": "Cruide Acceleration [deg_s2]",
+                "x": 0,
+                "y": 15,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "node": "/ak60Pitch0",
+                  "param": "w_dot_cruise_deg_s2",
+                  "unit": "",
+                  "decimals": null,
+                  "editable": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wz3ju5j1",
+          "type": "text",
           "x": 0,
           "y": 0,
-          "w": 18,
-          "h": 8,
+          "w": 12,
+          "h": 2,
           "config": {
-            "color": "",
-            "tint": true,
-            "collapsible": false,
-            "startCollapsed": false,
-            "widgets": [
-              {
-                "id": "wirwterl",
-                "type": "value",
-                "title": "Degree",
-                "x": 6,
-                "y": 0,
-                "w": 4,
-                "h": 7,
-                "config": {
-                  "topic": "",
-                  "path": "data",
-                  "unit": "",
-                  "decimals": null
-                }
-              },
-              {
-                "id": "wx8wykp4",
-                "type": "indicator",
-                "title": "State",
-                "x": 10,
-                "y": 0,
-                "w": 4,
-                "h": 7,
-                "config": {
-                  "topic": "",
-                  "path": "data",
-                  "states": [
-                    {
-                      "value": "0",
-                      "label": "Not Calibrated",
-                      "color": "muted"
-                    },
-                    {
-                      "value": "1",
-                      "label": "GoingToFirstSide",
-                      "color": "blue"
-                    },
-                    {
-                      "value": "2",
-                      "label": "GoingToSecondSide",
-                      "color": "blue"
-                    },
-                    {
-                      "value": "3",
-                      "label": "CollectionData",
-                      "color": "blue"
-                    },
-                    {
-                      "value": "4",
-                      "label": "GoingToZero",
-                      "color": "blue"
-                    },
-                    {
-                      "value": "5",
-                      "label": "Calibrated",
-                      "color": "ok"
-                    }
-                  ],
-                  "otherColor": "warn",
-                  "showRaw": true,
-                  "layout": "single"
-                }
-              },
-              {
-                "id": "wv6gcqi0",
-                "type": "value",
-                "title": "Range",
-                "x": 14,
-                "y": 0,
-                "w": 4,
-                "h": 7,
-                "config": {
-                  "topic": "",
-                  "path": "data",
-                  "unit": "",
-                  "decimals": null
-                }
-              },
-              {
-                "id": "wbp8x0lq",
-                "type": "bar",
-                "title": "current",
-                "x": 0,
-                "y": 0,
-                "w": 6,
-                "h": 4,
-                "config": {
-                  "topic": "",
-                  "path": "data",
-                  "min": 0,
-                  "max": 1,
-                  "baseColor": "ok",
-                  "thresholds": [
-                    {
-                      "value": 0.8,
-                      "color": "warn",
-                      "label": ""
-                    }
-                  ],
-                  "orientation": "horizontal",
-                  "abs": true
-                }
-              },
-              {
-                "id": "wn1i2eqy",
-                "type": "buttons",
-                "x": 0,
-                "y": 4,
-                "w": 6,
-                "h": 3,
-                "config": {
-                  "topic": "",
-                  "type": "",
-                  "autoStamp": true,
-                  "layout": "row",
-                  "showActive": false,
-                  "repeatHz": null,
-                  "buttons": [
-                    {
-                      "label": "Active Calibration",
-                      "message": {
-                        "data": 1
-                      },
-                      "color": "accent",
-                      "confirm": false
-                    }
-                  ]
-                }
-              }
-            ]
+            "text": "# AK60 Pitch",
+            "size": "md",
+            "align": "left",
+            "muted": false
           }
         },
         {
-          "id": "wie9g454",
+          "id": "wevhax9m",
+          "type": "divider",
+          "x": 0,
+          "y": 23,
+          "w": 12,
+          "h": 1,
+          "config": {
+            "orientation": "horizontal",
+            "line": "solid",
+            "thickness": 1,
+            "color": ""
+          }
+        },
+        {
+          "id": "wifyqf90",
+          "type": "plot",
+          "x": 0,
+          "y": 24,
+          "w": 12,
+          "h": 9,
+          "config": {
+            "series": [
+              {
+                "topic": "/effector/vector_thruster/alpha/setpoint",
+                "path": "data",
+                "label": "alpha/setpoint",
+                "color": ""
+              },
+              {
+                "topic": "/effector/vector_thruster/alpha/measured",
+                "path": "data",
+                "label": "alpha/measured",
+                "color": ""
+              }
+            ],
+            "window": 30,
+            "yMin": null,
+            "yMax": null,
+            "lines": [],
+            "legend": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "p7gjs2in",
+      "title": "AK60Yaw",
+      "widgets": [
+        {
+          "id": "ww37svzd",
           "type": "group",
-          "title": "AK60Pitch",
+          "title": "Feedback",
           "x": 0,
-          "y": 9,
-          "w": 18,
-          "h": 8,
+          "y": 3,
+          "w": 6,
+          "h": 20,
           "config": {
             "color": "",
             "tint": true,
@@ -167,30 +365,15 @@
             "startCollapsed": false,
             "widgets": [
               {
-                "id": "wdvf2tng",
-                "type": "value",
-                "title": "Degree",
-                "x": 6,
-                "y": 0,
-                "w": 4,
-                "h": 7,
-                "config": {
-                  "topic": "",
-                  "path": "data",
-                  "unit": "",
-                  "decimals": null
-                }
-              },
-              {
-                "id": "w9u1ozyl",
+                "id": "weact7xn",
                 "type": "indicator",
                 "title": "State",
-                "x": 10,
-                "y": 0,
-                "w": 4,
-                "h": 7,
+                "x": 0,
+                "y": 4,
+                "w": 6,
+                "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/component/ak60Yaw0/param/debug/calib_state",
                   "path": "data",
                   "states": [
                     {
@@ -230,30 +413,30 @@
                 }
               },
               {
-                "id": "w7u02aeg",
+                "id": "wce4qgw5",
                 "type": "value",
                 "title": "Range",
-                "x": 14,
+                "x": 0,
                 "y": 0,
-                "w": 4,
-                "h": 7,
+                "w": 6,
+                "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/component/ak60Yaw0/param/debug/feasible_range",
                   "path": "data",
                   "unit": "",
                   "decimals": null
                 }
               },
               {
-                "id": "whqaapuv",
+                "id": "wu6ee51a",
                 "type": "bar",
                 "title": "current",
                 "x": 0,
-                "y": 0,
+                "y": 12,
                 "w": 6,
                 "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/component/ak60Yaw0/param/debug/current_a",
                   "path": "data",
                   "min": 0,
                   "max": 1,
@@ -270,15 +453,18 @@
                 }
               },
               {
-                "id": "ws9sx48f",
+                "id": "wrruenwc",
                 "type": "buttons",
                 "x": 0,
-                "y": 4,
+                "y": 16,
                 "w": 6,
                 "h": 3,
                 "config": {
-                  "topic": "",
-                  "type": "",
+                  "target": "topic",
+                  "topic": "/bus/device",
+                  "node": "",
+                  "param": "",
+                  "type": "mdm_common/msg/BusMessage",
                   "autoStamp": true,
                   "layout": "row",
                   "showActive": false,
@@ -287,25 +473,65 @@
                     {
                       "label": "Active Calibration",
                       "message": {
-                        "data": 1
+                        "stamp": {
+                          "sec": 0,
+                          "nanosec": 0
+                        },
+                        "id": 2,
+                        "type": 0,
+                        "message": 28,
+                        "payload_size": 2,
+                        "payload_data": [
+                          104,
+                          0
+                        ]
                       },
                       "color": "accent",
                       "confirm": false
                     }
                   ]
                 }
+              },
+              {
+                "id": "wwtpjws5",
+                "type": "value",
+                "title": "Degree",
+                "x": 0,
+                "y": 8,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "/component/ak60Yaw0/param/debug/position_deg",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
               }
             ]
           }
         },
         {
-          "id": "w5p23m7l",
+          "id": "w5ob65ds",
+          "type": "divider",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "config": {
+            "orientation": "horizontal",
+            "line": "solid",
+            "thickness": 1,
+            "color": ""
+          }
+        },
+        {
+          "id": "w10qbwwg",
           "type": "group",
-          "title": "AK70Pendulum",
-          "x": 0,
-          "y": 18,
-          "w": 18,
-          "h": 8,
+          "title": "CMD",
+          "x": 6,
+          "y": 3,
+          "w": 6,
+          "h": 20,
           "config": {
             "color": "",
             "tint": true,
@@ -313,30 +539,191 @@
             "startCollapsed": false,
             "widgets": [
               {
-                "id": "w8dc77gq",
-                "type": "value",
-                "title": "Degree",
-                "x": 6,
+                "id": "wu728sbw",
+                "type": "publish",
+                "title": "beta/setpoint",
+                "x": 0,
                 "y": 0,
-                "w": 4,
-                "h": 7,
+                "w": 6,
+                "h": 8,
                 "config": {
-                  "topic": "",
-                  "path": "data",
-                  "unit": "",
-                  "decimals": null
+                  "topic": "/effector/vector_thruster/beta/setpoint",
+                  "type": "",
+                  "template": {
+                    "stamp": {
+                      "sec": 0,
+                      "nanosec": 0
+                    },
+                    "data": 0
+                  },
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
                 }
               },
               {
-                "id": "wldq8gsd",
+                "id": "wy2jb7we",
+                "type": "buttons",
+                "title": "Invert",
+                "x": 0,
+                "y": 8,
+                "w": 6,
+                "h": 3,
+                "config": {
+                  "target": "param",
+                  "topic": "",
+                  "node": "/ak60Yaw0",
+                  "param": "inverted",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "row",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "False",
+                      "message": {
+                        "data": 0
+                      },
+                      "value": "false",
+                      "color": "",
+                      "confirm": false
+                    },
+                    {
+                      "label": "True",
+                      "message": {
+                        "data": 1
+                      },
+                      "value": "true",
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "ws8rvu0b",
+                "type": "param",
+                "title": "Cruide Speed [deg_s]",
+                "x": 0,
+                "y": 11,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "node": "/ak60Yaw0",
+                  "param": "w_cruise_deg_s",
+                  "unit": "",
+                  "decimals": null,
+                  "editable": true
+                }
+              },
+              {
+                "id": "wht19qha",
+                "type": "param",
+                "title": "Cruide Acceleration [deg_s2]",
+                "x": 0,
+                "y": 15,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "node": "/ak60Yaw0",
+                  "param": "w_dot_cruise_deg_s2",
+                  "unit": "",
+                  "decimals": null,
+                  "editable": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "w78xj6ty",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "config": {
+            "text": "# AK60 Yaw",
+            "size": "md",
+            "align": "left",
+            "muted": false
+          }
+        },
+        {
+          "id": "wb538ez2",
+          "type": "divider",
+          "x": 0,
+          "y": 23,
+          "w": 12,
+          "h": 1,
+          "config": {
+            "orientation": "horizontal",
+            "line": "solid",
+            "thickness": 1,
+            "color": ""
+          }
+        },
+        {
+          "id": "wshg98ll",
+          "type": "plot",
+          "x": 0,
+          "y": 24,
+          "w": 12,
+          "h": 9,
+          "config": {
+            "series": [
+              {
+                "topic": "/effector/vector_thruster/beta/setpoint",
+                "path": "data",
+                "label": "beta/setpoint",
+                "color": "blue"
+              },
+              {
+                "topic": "/effector/vector_thruster/beta/measured",
+                "path": "data",
+                "label": "beta/measured",
+                "color": ""
+              }
+            ],
+            "window": 30,
+            "yMin": null,
+            "yMax": null,
+            "lines": [],
+            "legend": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "p2zxxsjf",
+      "title": "AK70Pendulum",
+      "widgets": [
+        {
+          "id": "wvrsy4r4",
+          "type": "group",
+          "title": "Feedback",
+          "x": 0,
+          "y": 3,
+          "w": 6,
+          "h": 20,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wudv3xtz",
                 "type": "indicator",
                 "title": "State",
-                "x": 10,
-                "y": 0,
-                "w": 4,
-                "h": 7,
+                "x": 0,
+                "y": 4,
+                "w": 6,
+                "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/component/ak70Pendulum0/param/debug/calib_state",
                   "path": "data",
                   "states": [
                     {
@@ -376,30 +763,30 @@
                 }
               },
               {
-                "id": "w51moi9s",
+                "id": "wy8zw4sd",
                 "type": "value",
                 "title": "Range",
-                "x": 14,
+                "x": 0,
                 "y": 0,
-                "w": 4,
-                "h": 7,
+                "w": 6,
+                "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/component/ak70Pendulum0/param/debug/feasible_range",
                   "path": "data",
                   "unit": "",
                   "decimals": null
                 }
               },
               {
-                "id": "w75okchb",
+                "id": "w2egp518",
                 "type": "bar",
                 "title": "current",
                 "x": 0,
-                "y": 0,
+                "y": 12,
                 "w": 6,
                 "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/component/ak60Pitch0/param/debug/current_a",
                   "path": "data",
                   "min": 0,
                   "max": 1,
@@ -416,14 +803,17 @@
                 }
               },
               {
-                "id": "w03o6zlv",
+                "id": "wzvi0k1w",
                 "type": "buttons",
                 "x": 0,
-                "y": 4,
+                "y": 16,
                 "w": 6,
                 "h": 3,
                 "config": {
-                  "topic": "",
+                  "target": "topic",
+                  "topic": "/bus/device",
+                  "node": "",
+                  "param": "",
                   "type": "",
                   "autoStamp": true,
                   "layout": "row",
@@ -433,23 +823,49 @@
                     {
                       "label": "Active Calibration",
                       "message": {
-                        "data": 1
+                        "stamp": {
+                          "sec": 0,
+                          "nanosec": 0
+                        },
+                        "id": 2,
+                        "type": 0,
+                        "message": 28,
+                        "payload_size": 2,
+                        "payload_data": [
+                          93,
+                          0
+                        ]
                       },
                       "color": "accent",
                       "confirm": false
                     }
                   ]
                 }
+              },
+              {
+                "id": "w5wjhsgh",
+                "type": "value",
+                "title": "Degree",
+                "x": 0,
+                "y": 8,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "topic": "/component/ak70Pendulum0/param/debug/position_deg",
+                  "path": "data",
+                  "unit": "",
+                  "decimals": null
+                }
               }
             ]
           }
         },
         {
-          "id": "wdwdnyeb",
+          "id": "wzveydy8",
           "type": "divider",
           "x": 0,
-          "y": 17,
-          "w": 18,
+          "y": 2,
+          "w": 12,
           "h": 1,
           "config": {
             "orientation": "horizontal",
@@ -459,11 +875,132 @@
           }
         },
         {
-          "id": "w9xyh0yw",
+          "id": "ww6cghef",
+          "type": "group",
+          "title": "CMD",
+          "x": 6,
+          "y": 3,
+          "w": 6,
+          "h": 20,
+          "config": {
+            "color": "",
+            "tint": true,
+            "collapsible": false,
+            "startCollapsed": false,
+            "widgets": [
+              {
+                "id": "wheh87j3",
+                "type": "publish",
+                "title": "pendulum/setpoint",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 8,
+                "config": {
+                  "topic": "/effector/pendulum/angle/setpoint",
+                  "type": "",
+                  "template": {},
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
+                }
+              },
+              {
+                "id": "w7b9r0c8",
+                "type": "buttons",
+                "title": "Invert",
+                "x": 0,
+                "y": 8,
+                "w": 6,
+                "h": 3,
+                "config": {
+                  "target": "param",
+                  "topic": "",
+                  "node": "/ak70Pendulum0",
+                  "param": "inverted",
+                  "type": "",
+                  "autoStamp": true,
+                  "layout": "row",
+                  "showActive": false,
+                  "repeatHz": null,
+                  "buttons": [
+                    {
+                      "label": "False",
+                      "message": {
+                        "data": 0
+                      },
+                      "value": "false",
+                      "color": "",
+                      "confirm": false
+                    },
+                    {
+                      "label": "True",
+                      "message": {
+                        "data": 1
+                      },
+                      "value": "true",
+                      "color": "accent",
+                      "confirm": false
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "w1bgulr7",
+                "type": "param",
+                "title": "Cruide Speed [deg_s]",
+                "x": 0,
+                "y": 11,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "node": "/ak70Pendulum0",
+                  "param": "w_cruise_deg_s",
+                  "unit": "",
+                  "decimals": null,
+                  "editable": true
+                }
+              },
+              {
+                "id": "wywlkouu",
+                "type": "param",
+                "title": "Cruide Acceleration [deg_s2]",
+                "x": 0,
+                "y": 15,
+                "w": 6,
+                "h": 4,
+                "config": {
+                  "node": "/ak70Pendulum0",
+                  "param": "w_dot_cruise_deg_s2",
+                  "unit": "",
+                  "decimals": null,
+                  "editable": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "w0zompp5",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "config": {
+            "text": "# AK70 Pendulum",
+            "size": "md",
+            "align": "left",
+            "muted": false
+          }
+        },
+        {
+          "id": "wmr7dzrb",
           "type": "divider",
           "x": 0,
-          "y": 8,
-          "w": 18,
+          "y": 23,
+          "w": 12,
           "h": 1,
           "config": {
             "orientation": "horizontal",
@@ -473,17 +1010,32 @@
           }
         },
         {
-          "id": "wihik4n3",
-          "type": "divider",
+          "id": "wb4jcwmf",
+          "type": "plot",
           "x": 0,
-          "y": 26,
-          "w": 18,
-          "h": 1,
+          "y": 24,
+          "w": 12,
+          "h": 9,
           "config": {
-            "orientation": "horizontal",
-            "line": "solid",
-            "thickness": 1,
-            "color": ""
+            "series": [
+              {
+                "topic": "/effector/pendulum/angle/setpoint",
+                "path": "data",
+                "label": "angle/setpoint",
+                "color": ""
+              },
+              {
+                "topic": "/effector/pendulum/angle/measured",
+                "path": "data",
+                "label": "angle/measured",
+                "color": ""
+              }
+            ],
+            "window": 30,
+            "yMin": null,
+            "yMax": null,
+            "lines": [],
+            "legend": true
           }
         }
       ]
@@ -515,7 +1067,7 @@
                 "w": 6,
                 "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/awash/raw",
                   "path": "data",
                   "min": 0,
                   "max": 3300,
@@ -544,7 +1096,7 @@
                 "w": 6,
                 "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/awash/state",
                   "path": "data",
                   "states": [
                     {
@@ -596,8 +1148,8 @@
                 "config": {
                   "target": "param",
                   "topic": "",
-                  "node": "",
-                  "param": "",
+                  "node": "/beacon0",
+                  "param": "active",
                   "type": "",
                   "autoStamp": true,
                   "layout": "grid",
@@ -610,7 +1162,8 @@
                         "data": 0
                       },
                       "color": "",
-                      "confirm": false
+                      "confirm": false,
+                      "value": "false"
                     },
                     {
                       "label": "On",
@@ -618,7 +1171,8 @@
                         "data": 1
                       },
                       "color": "accent",
-                      "confirm": false
+                      "confirm": false,
+                      "value": "true"
                     }
                   ]
                 }
@@ -634,8 +1188,8 @@
                 "config": {
                   "target": "param",
                   "topic": "",
-                  "node": "",
-                  "param": "",
+                  "node": "/beacon0",
+                  "param": "s_percent_intensity",
                   "type": "",
                   "path": "data",
                   "template": {},
@@ -669,20 +1223,6 @@
             "startCollapsed": false,
             "widgets": [
               {
-                "id": "wu8l6u0k",
-                "type": "message",
-                "title": "RGB",
-                "x": 0,
-                "y": 0,
-                "w": 6,
-                "h": 7,
-                "config": {
-                  "topic": "",
-                  "path": "",
-                  "maxArray": 20
-                }
-              },
-              {
                 "id": "w564hdng",
                 "type": "slider",
                 "title": "Edge Period MS",
@@ -693,8 +1233,8 @@
                 "config": {
                   "target": "param",
                   "topic": "",
-                  "node": "",
-                  "param": "",
+                  "node": "/led0",
+                  "param": "s_edge_period_ms",
                   "type": "",
                   "path": "data",
                   "template": {},
@@ -709,6 +1249,34 @@
                   "feedbackPath": "data",
                   "repeatHz": null
                 }
+              },
+              {
+                "id": "w561zfjt",
+                "type": "publish",
+                "title": "RGB",
+                "x": 0,
+                "y": 0,
+                "w": 6,
+                "h": 7,
+                "config": {
+                  "topic": "/led/request",
+                  "type": "mdm_devices/msg/RGB",
+                  "template": {
+                    "red": {
+                      "color": 0
+                    },
+                    "green": {
+                      "color": 0
+                    },
+                    "blue": {
+                      "color": 0
+                    }
+                  },
+                  "fields": [],
+                  "autoStamp": true,
+                  "sendLabel": "Publish",
+                  "repeatHz": null
+                }
               }
             ]
           }
@@ -717,10 +1285,10 @@
           "id": "wowulgg6",
           "type": "group",
           "title": "T500",
-          "x": 0,
-          "y": 19,
-          "w": 12,
-          "h": 8,
+          "x": 12,
+          "y": 0,
+          "w": 9,
+          "h": 19,
           "config": {
             "color": "",
             "tint": true,
@@ -733,53 +1301,18 @@
                 "title": "PWM Request",
                 "x": 0,
                 "y": 0,
-                "w": 12,
-                "h": 7,
+                "w": 9,
+                "h": 4,
                 "config": {
-                  "topic": "",
+                  "topic": "/motor/pwm/request",
                   "type": "",
-                  "template": {},
-                  "fields": [],
-                  "autoStamp": true,
-                  "sendLabel": "Publish",
-                  "repeatHz": null
-                }
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "p7oultf6",
-      "title": "Motors CMD",
-      "widgets": [
-        {
-          "id": "wbkjevat",
-          "type": "group",
-          "title": "AK60YAW",
-          "x": 0,
-          "y": 0,
-          "w": 15,
-          "h": 13,
-          "config": {
-            "color": "",
-            "tint": true,
-            "collapsible": false,
-            "startCollapsed": false,
-            "widgets": [
-              {
-                "id": "wsmtxcyq",
-                "type": "publish",
-                "title": "Setpoint",
-                "x": 0,
-                "y": 0,
-                "w": 7,
-                "h": 8,
-                "config": {
-                  "topic": "/effector/vector_thruster/alpha/setpoint",
-                  "type": "",
-                  "template": {},
+                  "template": {
+                    "stamp": {
+                      "sec": 0,
+                      "nanosec": 0
+                    },
+                    "data": 0
+                  },
                   "fields": [],
                   "autoStamp": true,
                   "sendLabel": "Publish",
@@ -787,118 +1320,26 @@
                 }
               },
               {
-                "id": "we3l4w4u",
-                "type": "params",
-                "title": "Params",
-                "x": 7,
-                "y": 0,
-                "w": 8,
-                "h": 12,
-                "config": {
-                  "node": "/ak60Yaw0",
-                  "params": [],
-                  "editable": true,
-                  "showType": true
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "who6s0xx",
-          "type": "group",
-          "title": "AK60Pitch",
-          "x": 0,
-          "y": 13,
-          "w": 15,
-          "h": 9,
-          "config": {
-            "color": "",
-            "tint": true,
-            "collapsible": false,
-            "startCollapsed": false,
-            "widgets": [
-              {
-                "id": "wey2r3w4",
-                "type": "publish",
-                "title": "Setpoint",
+                "id": "w2g4gj8q",
+                "type": "plot",
                 "x": 0,
-                "y": 0,
-                "w": 7,
-                "h": 8,
+                "y": 4,
+                "w": 9,
+                "h": 14,
                 "config": {
-                  "topic": "",
-                  "type": "",
-                  "template": {},
-                  "fields": [],
-                  "autoStamp": true,
-                  "sendLabel": "Publish",
-                  "repeatHz": null
-                }
-              },
-              {
-                "id": "wdgl7yfi",
-                "type": "params",
-                "title": "Params",
-                "x": 7,
-                "y": 0,
-                "w": 8,
-                "h": 8,
-                "config": {
-                  "node": "",
-                  "params": [],
-                  "editable": true,
-                  "showType": true
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "w15o5vth",
-          "type": "group",
-          "title": "AK70Pendulum",
-          "x": 0,
-          "y": 22,
-          "w": 15,
-          "h": 9,
-          "config": {
-            "color": "",
-            "tint": true,
-            "collapsible": false,
-            "startCollapsed": false,
-            "widgets": [
-              {
-                "id": "wi625crr",
-                "type": "publish",
-                "title": "Setpoint",
-                "x": 0,
-                "y": 0,
-                "w": 7,
-                "h": 8,
-                "config": {
-                  "topic": "",
-                  "type": "",
-                  "template": {},
-                  "fields": [],
-                  "autoStamp": true,
-                  "sendLabel": "Publish",
-                  "repeatHz": null
-                }
-              },
-              {
-                "id": "wm22g53t",
-                "type": "params",
-                "title": "Params",
-                "x": 7,
-                "y": 0,
-                "w": 8,
-                "h": 8,
-                "config": {
-                  "node": "",
-                  "params": [],
-                  "editable": true,
-                  "showType": true
+                  "series": [
+                    {
+                      "topic": "/motor/pwm/request",
+                      "path": "data",
+                      "label": "",
+                      "color": ""
+                    }
+                  ],
+                  "window": 30,
+                  "yMin": null,
+                  "yMax": null,
+                  "lines": [],
+                  "legend": true
                 }
               }
             ]

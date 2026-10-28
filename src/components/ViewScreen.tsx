@@ -258,6 +258,17 @@ function ViewEditor({ id, standalone, readonly, initialDoc, initialPage }: Props
       [pages[i], pages[j]] = [pages[j]!, pages[i]!];
       return { ...d, pages };
     });
+  /** Copies a page (widgets with fresh ids) right after it and opens the copy. */
+  const duplicatePage = (pid: string) => {
+    const src = doc.pages.find((p) => p.id === pid);
+    if (!src) return;
+    const p: Page = { id: newId("p"), title: `${src.title} (copy)`, widgets: src.widgets.map((w) => tree.cloneWithNewIds(w, () => newId("w"))) };
+    setDoc((d) => {
+      const i = d.pages.findIndex((x) => x.id === pid);
+      return { ...d, pages: [...d.pages.slice(0, i + 1), p, ...d.pages.slice(i + 1)] };
+    });
+    setPageId(p.id);
+  };
   const deletePage = (pid: string) => {
     if (doc.pages.length <= 1) return;
     const i = doc.pages.findIndex((p) => p.id === pid);
@@ -294,6 +305,7 @@ function ViewEditor({ id, standalone, readonly, initialDoc, initialPage }: Props
           onAdd={addPage}
           onRename={renamePage}
           onMove={movePage}
+          onDuplicate={duplicatePage}
           onDelete={deletePage}
         />
         {(doc.variables || []).length > 0 && (
@@ -478,6 +490,7 @@ function PageTabs({
   onAdd,
   onRename,
   onMove,
+  onDuplicate,
   onDelete,
 }: {
   pages: Page[];
@@ -487,6 +500,7 @@ function PageTabs({
   onAdd: () => void;
   onRename: (id: string, title: string) => void;
   onMove: (id: string, delta: number) => void;
+  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
   const [renaming, setRenaming] = useState<string | null>(null);
@@ -532,6 +546,9 @@ function PageTabs({
           </button>
           <button className="icon" title="Rename page" onClick={() => setRenaming(current)}>
             ✎
+          </button>
+          <button className="icon" title="Duplicate page" onClick={() => onDuplicate(current)}>
+            ⧉
           </button>
           <button
             className={"icon danger" + (armDelete ? " armed" : "")}
